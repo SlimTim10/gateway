@@ -24,6 +24,7 @@ dependencies:
 - aeson >= 1.4.6.0 && < 1.5
 - bytestring >= 0.10.10.0 && < 0.11
 - binary >= 0.8.6.0 && < 0.9
+- serialport >= 0.4.7 && < 0.5
 
 library:
   source-dirs: src

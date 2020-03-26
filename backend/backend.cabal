@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 62a7559837521dc07c0c01f1dc6aee7d7d7d79db4070174fffa50240168cda27
+-- hash: 3cbc39d293175ad13183bb72822ac7c2a32e74569d9b3d0a0342cd880e421dec
 
 name:           backend
 version:        0.1.0.0
@@ -39,6 +39,7 @@ library
     , base >=4.7 && <5
     , binary >=0.8.6.0 && <0.9
     , bytestring >=0.10.10.0 && <0.11
+    , serialport >=0.4.7 && <0.5
   default-language: Haskell2010
 
 executable backend-exe
@@ -55,6 +56,7 @@ executable backend-exe
     , base >=4.7 && <5
     , binary >=0.8.6.0 && <0.9
     , bytestring >=0.10.10.0 && <0.11
+    , serialport >=0.4.7 && <0.5
   default-language: Haskell2010
 
 test-suite backend-test
@@ -75,4 +77,5 @@ test-suite backend-test
     , binary >=0.8.6.0 && <0.9
     , bytestring >=0.10.10.0 && <0.11
     , hspec
+    , serialport >=0.4.7 && <0.5
   default-language: Haskell2010
