@@ -1,0 +1,78 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 62a7559837521dc07c0c01f1dc6aee7d7d7d79db4070174fffa50240168cda27
+
+name:           backend
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/SlimTim10/backend#readme>
+homepage:       https://github.com/SlimTim10/backend#readme
+bug-reports:    https://github.com/SlimTim10/backend/issues
+author:         SlimTim10
+maintainer:     slimtim10@gmail.com
+copyright:      SlimTim10
+license:        MIT
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/SlimTim10/backend
+
+library
+  exposed-modules:
+      Lib
+      Packet
+  other-modules:
+      Paths_backend
+  hs-source-dirs:
+      src
+  default-extensions: OverloadedStrings DeriveGeneric DeriveAnyClass DuplicateRecordFields NamedFieldPuns
+  build-depends:
+      aeson >=1.4.6.0 && <1.5
+    , base >=4.7 && <5
+    , binary >=0.8.6.0 && <0.9
+    , bytestring >=0.10.10.0 && <0.11
+  default-language: Haskell2010
+
+executable backend-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_backend
+  hs-source-dirs:
+      app
+  default-extensions: OverloadedStrings DeriveGeneric DeriveAnyClass DuplicateRecordFields NamedFieldPuns
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson >=1.4.6.0 && <1.5
+    , backend
+    , base >=4.7 && <5
+    , binary >=0.8.6.0 && <0.9
+    , bytestring >=0.10.10.0 && <0.11
+  default-language: Haskell2010
+
+test-suite backend-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      LibSpec
+      PacketSpec
+      Paths_backend
+  hs-source-dirs:
+      test
+  default-extensions: OverloadedStrings DeriveGeneric DeriveAnyClass DuplicateRecordFields NamedFieldPuns
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson >=1.4.6.0 && <1.5
+    , backend
+    , base >=4.7 && <5
+    , binary >=0.8.6.0 && <0.9
+    , bytestring >=0.10.10.0 && <0.11
+    , hspec
+  default-language: Haskell2010
