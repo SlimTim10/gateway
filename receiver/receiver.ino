@@ -8,6 +8,8 @@
 
 #include <Arduino.h>
 
+#include <functional.h>
+
 static Radio radio(RF_CS, RF_G0, RF_RST);
 
 void setup(void) {
@@ -34,7 +36,6 @@ void loop(void) {
 	}
 }
 
-
 static inline void waitForSerialData(void) {
 	delay(100);
 }
@@ -43,7 +44,8 @@ static inline void handleRadio(void) {
 	uint8_t packet[PACKET_MAX_LENGTH];
 	uint8_t len = sizeof(packet);
 	if (radio.recv(packet, &len)) {
-		Serial.println((char *) packet);
+		forEach(packet, len, serialSendHex);
+		Serial.println();
 		Serial.flush();
 	}
 }
@@ -57,4 +59,12 @@ static inline void handleSerial(void) {
 		packet[len] = Serial.read();
 	}
 	sendPacket(&radio, packet, len);
+}
+
+static void serialSend(uint8_t b) {
+	Serial.print(b);
+}
+
+static void serialSendHex(uint8_t b) {
+	Serial.print(b, HEX);
 }
