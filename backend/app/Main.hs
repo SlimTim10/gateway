@@ -14,42 +14,47 @@ import System.Hardware.Serialport
 import Control.Concurrent (threadDelay)
 import Text.Printf (printf)
 import Data.Semigroup ((<>))
+import Options.Applicative (execParser)
+
+import Options (options, Options(..))
 
 secondsToMicro :: Int -> Int
 secondsToMicro = (* 1000) . (* 1000)
 
 main :: IO ()
-main = do
-  let port = "COM19"          -- Windows
-  -- let port = "/dev/ttyUSB0"  -- Linux
-  s <- openSerial port defaultSerialSettings { commSpeed = CS115200 }
-  threadDelay $ secondsToMicro 3
-  loop s
-  closeSerial s
+main = run =<< execParser options
 
-loop :: SerialPort -> IO ()
-loop s = do
-  line <- recvLine s
+run :: Options -> IO ()
+run (Options port baud newline) = do
+  s <- openSerial port defaultSerialSettings { commSpeed = baud }
+  wait
+  loop newline s
+  closeSerial s
+  where
+    wait = threadDelay $ secondsToMicro 3
+
+loop :: String -> SerialPort -> IO ()
+loop newline s = do
+  line <- recvLine (B.pack newline) s
   case line of
     Just bs ->  do
       let cs = B.unpack bs
       mapM_ (printf "0x%X ") cs
       putStrLn ""
       putStrLn cs
-      loop s
-    Nothing -> loop s
+      loop newline s
+    Nothing -> loop newline s
 
-recvLine :: SerialPort -> IO (Maybe B.ByteString)
+recvLine :: B.ByteString -> SerialPort -> IO (Maybe B.ByteString)
 recvLine = recvLine' ""
 
-recvLine' :: B.ByteString -> SerialPort -> IO (Maybe B.ByteString)
-recvLine' bs s = case lineSuffix `B.stripSuffix` bs of
+recvLine' :: B.ByteString -> B.ByteString -> SerialPort -> IO (Maybe B.ByteString)
+recvLine' bs newline s = case newline `B.stripSuffix` bs of
   Nothing -> next
   line -> return line
   where
-    lineSuffix = "\r\n"
     next = do
       b <- recv s 1
       if B.null b
         then return Nothing
-        else recvLine' (bs <> b) s
+        else recvLine' (bs <> b) newline s
