@@ -1,7 +1,6 @@
 module Packet
   ( Packet(..)
   , fromBytes
-  , validPacket
   , getPayloadLength
   , packetFormat
   , headerFormat
@@ -17,7 +16,7 @@ import Data.Aeson
   ( FromJSON
   , ToJSON
   )
-import qualified Data.ByteString.Char8 as BS
+import qualified Data.ByteString.Char8 as B
 import Data.ByteString.Char8 (ByteString)
 import Data.ByteString.Lazy.Char8 (fromStrict)
 import qualified Data.Binary.Get as Bin
@@ -76,7 +75,7 @@ payloadFormat = Format
   }
 
 slice :: Int -> Int -> ByteString -> ByteString
-slice start length = BS.take length . BS.drop start
+slice start length = B.take length . B.drop start
 
 getWord32 :: ByteString -> Int
 getWord32 bs = fromIntegral $ Bin.runGet Bin.getWord32be (fromStrict bs)
@@ -88,7 +87,7 @@ getWord8 :: ByteString -> Int
 getWord8 bs = fromIntegral $ Bin.runGet Bin.getWord8 (fromStrict bs)
 
 getInt :: ByteString -> Int
-getInt bs = case BS.length bs of
+getInt bs = case B.length bs of
   0 -> 0
   1 -> getWord8 bs
   2 -> getWord16 bs
@@ -96,36 +95,24 @@ getInt bs = case BS.length bs of
 
 type RawPacket = ByteString
 
-getPayloadLength :: RawPacket -> Maybe Int
-getPayloadLength raw
-  | BS.length raw < lengthH headerFormat = Nothing
-  | otherwise = Just $ getInt plRaw
+getPayloadLength :: RawPacket -> Int
+getPayloadLength raw = getInt plRaw
   where
     plRaw = slice plIdx plLen hdr
     plIdx = index . payloadLength $ headerFormat
     plLen = length . payloadLength $ headerFormat
     hdr = slice (indexH headerFormat) (lengthH headerFormat) raw
 
-validPacket :: RawPacket -> Bool
-validPacket raw
-  | BS.length raw < lengthH headerFormat = False
-  | otherwise =
-      maybe
-      False
-      (\pLen -> BS.length raw == lengthH headerFormat + pLen)
-      (getPayloadLength raw)
-
-fromBytes :: RawPacket -> Maybe Packet
+fromBytes :: RawPacket -> Either String Packet
 fromBytes raw
-  | BS.length raw < lengthH headerFormat = Nothing
-  | not . validPacket $ raw = Nothing
-  | otherwise = do
-      pLen <- getPayloadLength raw
-      return Packet
-        { propAddress = addr
-        , payload = map ord . BS.unpack . slice (index payloadFormat) pLen $ raw
-        }
+  | B.length raw < lengthH headerFormat = Left "Not enough bytes for header"
+  | B.length raw /= lengthH headerFormat + pLen = Left "Actual payload does not match length specified in header"
+  | otherwise = Right Packet
+    { propAddress = addr
+    , payload = map ord . B.unpack . slice (index payloadFormat) pLen $ raw
+    }
   where
+    pLen = getPayloadLength raw
     addr = getInt . slice addrIdx addrLen $ raw
     addrIdx = index . (propAddress :: HeaderFormat -> Format) $ headerFormat
     addrLen = length . (propAddress :: HeaderFormat -> Format) $ headerFormat
