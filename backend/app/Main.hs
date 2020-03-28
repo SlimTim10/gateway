@@ -15,8 +15,11 @@ import Control.Concurrent (threadDelay)
 import Text.Printf (printf)
 import Data.Semigroup ((<>))
 import Options.Applicative (execParser)
+import Data.Char (chr, ord)
 
 import Options (options, Options(..))
+
+import Packet (fromASCIIBytes)
 
 secondsToMicro :: Int -> Int
 secondsToMicro = (* 1000) . (* 1000)
@@ -36,14 +39,9 @@ run (Options port baud newline) = do
 loop :: String -> SerialPort -> IO ()
 loop newline s = do
   line <- recvLine (B.pack newline) s
-  case line of
-    Just bs ->  do
-      let cs = B.unpack bs
-      mapM_ (printf "0x%X ") cs
-      putStrLn ""
-      putStrLn cs
-      loop newline s
-    Nothing -> loop newline s
+  bs <- line
+  either putStrLn print (fromASCIIBytes bs)
+  loop newline s
 
 recvLine :: B.ByteString -> SerialPort -> IO (Maybe B.ByteString)
 recvLine = recvLine' ""

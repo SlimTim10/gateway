@@ -1,6 +1,7 @@
 module Packet
   ( Packet(..)
   , fromBytes
+  , fromASCIIBytes
   , getPayloadLength
   , packetFormat
   , headerFormat
@@ -116,6 +117,10 @@ fromBytes raw
     addr = getInt . slice addrIdx addrLen $ raw
     addrIdx = index . (propAddress :: HeaderFormat -> Format) $ headerFormat
     addrLen = length . (propAddress :: HeaderFormat -> Format) $ headerFormat
+
+fromASCIIBytes :: RawPacket -> Either String Packet
+fromASCIIBytes = fromBytes . B.map fromASCII
+  where fromASCII b = chr $ max (ord b - 0x30) 0x00
 
 readPacket :: FilePath -> IO (Either String Packet)
 readPacket = readJSON
