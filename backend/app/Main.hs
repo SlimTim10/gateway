@@ -16,6 +16,7 @@ import Text.Printf (printf)
 import Data.Semigroup ((<>))
 import Options.Applicative (execParser)
 import Data.Char (chr, ord)
+import Control.Monad (forM_)
 
 import Options (options, Options(..))
 
@@ -39,10 +40,8 @@ run (Options port baud newline) = do
 loop :: String -> SerialPort -> IO ()
 loop newline s = do
   line <- recvLine (B.pack newline) s
-  maybe
-    (return ())
-    (\bs -> either putStrLn print (fromASCIIBytes bs))
-    line
+  forM_ line $ \bs -> do
+    either putStrLn print (fromASCIIBytes bs)
   loop newline s
 
 recvLine :: B.ByteString -> SerialPort -> IO (Maybe B.ByteString)
