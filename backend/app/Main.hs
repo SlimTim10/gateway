@@ -39,8 +39,10 @@ run (Options port baud newline) = do
 loop :: String -> SerialPort -> IO ()
 loop newline s = do
   line <- recvLine (B.pack newline) s
-  bs <- line
-  either putStrLn print (fromASCIIBytes bs)
+  maybe
+    (return ())
+    (\bs -> either putStrLn print (fromASCIIBytes bs))
+    line
   loop newline s
 
 recvLine :: B.ByteString -> SerialPort -> IO (Maybe B.ByteString)
