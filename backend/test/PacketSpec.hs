@@ -58,7 +58,7 @@ spec = do
   describe "fromASCIIBytes" $ do
     it "returns a valid Packet" $ do
       let bs = [0x30, 0x30, 0x30, 0x31, 0x31, 0x33]
-      let p = fromBytes $ B.pack . map chr $ bs
+      let p = fromASCIIBytes $ B.pack . map chr $ bs
       p `shouldSatisfy` isRight
       let (Right pkt) = p
       pkt `shouldBe` 
@@ -69,7 +69,7 @@ spec = do
 
     it "returns a valid Packet with a larger payload" $ do
       let bs = [0x30, 0x30, 0x30, 0x31, 0x33, 0x33, 0x32, 0x31]
-      let p = fromBytes $ B.pack . map chr $ bs
+      let p = fromASCIIBytes $ B.pack . map chr $ bs
       p `shouldSatisfy` isRight
       let (Right pkt) = p
       pkt `shouldBe` 
@@ -80,10 +80,10 @@ spec = do
 
     it "returns an error message when the packet is too small" $ do
       let bs = [0x30, 0x30, 0x31]
-      let p = fromBytes $ B.pack . map chr $ bs
+      let p = fromASCIIBytes $ B.pack . map chr $ bs
       p `shouldSatisfy` isLeft
 
     it "returns an error message when the payload does not match the length specified in the header" $ do
       let bs = [0x30, 0x30, 0x30, 0x31, 0x32, 0x31]
-      let p = fromBytes $ B.pack . map chr $ bs
+      let p = fromASCIIBytes $ B.pack . map chr $ bs
       p `shouldSatisfy` isLeft
