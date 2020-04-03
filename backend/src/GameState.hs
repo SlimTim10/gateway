@@ -3,18 +3,6 @@ module GameState
   -- )
 where
 
-import GHC.Generics (Generic)
-import Data.Yaml
---   ( FromJSON
---   , ToJSON
---   , encode
---   )
-import qualified Data.Aeson.Types as A
-import qualified Data.Text as T
-import qualified Data.HashMap.Strict as HM
-import Data.Traversable (for)
-import Control.Applicative ((<|>))
-
 -- import qualified Data.Map.Strict as M
 -- import Control.Monad.State -- (State, get, put, evalState)
 -- import Data.Time.Clock.POSIX (getPOSIXTime)
@@ -25,43 +13,6 @@ import Control.Applicative ((<|>))
 --   , (2, PropState (TagReader 0) 1585516415)
 --   , (3, PropState (Door Closed) 1585516415)
 --   ]
-
--- type Address = Int
--- type Name = String
--- type Values = [String]
--- type DefaultValue = String
-
-data PropYaml
-  = PropYaml
-    { name :: String
-    , options :: POptions
-    }
-  deriving (Show, Eq)
-
-data POptions
-  = POptions
-    { address :: Int
-    -- , values :: [String]
-    , defaultValue :: String
-    }
-  deriving (Show, Eq, Generic, ToJSON)
-
-instance FromJSON POptions where
-  parseJSON (Object o) =
-    POptions
-    <$> o .: "address"
-    <*> (o .: "defaultValue" <|> (showInt <$> o .: "defaultValue"))
-    where
-      showInt :: Int -> String
-      showInt = show
-    
-
-instance FromJSON PropYaml where
-  parseJSON = withObject "prop" $ \o -> do
-    let [(name, options)] = HM.toList o
-    options' <- parseJSON options
-    let name' = T.unpack name
-    return $ PropYaml name' options'
 
     
     
