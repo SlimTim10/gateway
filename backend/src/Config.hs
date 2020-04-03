@@ -19,8 +19,7 @@ import Control.Applicative ((<|>))
 data Prop
   = Prop
     { name :: String
-    , address :: Int
-    , values :: [String]
+    , settings :: Settings
     , state :: PropState
     }
   deriving (Show, Eq, Generic, ToJSON)
@@ -54,13 +53,10 @@ instance FromJSON Settings where
 
 instance FromJSON Prop where
   parseJSON = withObject "prop" $ \o -> do
-    let [(name, options)] = HM.toList o
+    let [(name, settings)] = HM.toList o
     let name' = T.unpack name
-    options' <- parseJSON options
-    let address' = (address :: Settings -> Int) options'
-    let values' = (values :: Settings -> [String]) options'
-    let defaultValue' = defaultValue options'
-    return $ Prop name' address' values' (PropState defaultValue' 0)
+    settings' <- parseJSON settings
+    return $ Prop name' settings' (PropState (defaultValue settings') 0)
 
 
 -- type Timestamp = Integer
