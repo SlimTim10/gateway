@@ -1,0 +1,58 @@
+props:
+  - TagReader1:
+    address: 1
+    values: [0,1,2,3]
+    defaultValue: 0
+    
+  - TagReader2:
+    address: 2
+    values: [0,1,2,3]
+    defaultValue: 0
+    
+  - Door:
+    address: 3
+    values: [Closed, Open]
+    defaultValue: Closed
+
+  - CardTableSlot1:
+    address: 4
+    values: [0,1,2,3,4,5]
+    defaultValue: 0
+  - CardTableSlot2:
+    address: 5
+    values: [0,1,2,3,4,5]
+    defaultValue: 0
+  - CardTableSlot3:
+    address: 6
+    values: [0,1,2,3,4,5]
+    defaultValue: 0
+
+rules:
+  - RuleBasic:
+    trigger:
+      - TagReader1: 1
+    action:
+      - Door: Open
+  
+  - RuleBasic:
+      trigger:
+        - TagReader1: 3
+        - TagReader2: 2
+      action:
+        - Door: Open
+          
+  - RuleSequence:
+      trigger:
+        - TagReader1: 1
+        - TagReader2: 2
+      action:
+        - Door: Closed
+          
+  - RuleTimedSequence:
+      trigger:
+        - TagReader1: 2
+          time: 0
+        - TagReader2: 3
+          time: 1
+      action:
+        - Door: Open

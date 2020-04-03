@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9c257b3606ddf29d839b43101867357a836db301e2ea82c307b875541bfc09c0
+-- hash: c89d136475156d82fd4b9c7e5fcd51378353c864da2b6c95ef628c2e62d4b07e
 
 name:           backend
 version:        0.1.0.0
@@ -27,6 +27,8 @@ source-repository head
 
 library
   exposed-modules:
+      Config
+      GameState
       Lib
       Packet
   other-modules:
@@ -39,9 +41,15 @@ library
     , base >=4.7 && <5
     , binary >=0.8.6.0 && <0.9
     , bytestring >=0.10.10.0 && <0.11
+    , containers >=0.6.2.1 && <0.7
+    , mtl >=2.2 && <2.3
     , optparse-applicative >=0.15.0.0 && <0.16
     , serialport >=0.4.7 && <0.5
     , split >=0.2.3.4 && <0.3
+    , text >=1.2.3.0 && <1.3
+    , time >=1.8 && <1.10
+    , unordered-containers >=0.2.8.0 && <0.3
+    , yaml >=0.11.1.0 && <0.12
   default-language: Haskell2010
 
 executable backend-exe
@@ -59,9 +67,15 @@ executable backend-exe
     , base >=4.7 && <5
     , binary >=0.8.6.0 && <0.9
     , bytestring >=0.10.10.0 && <0.11
+    , containers >=0.6.2.1 && <0.7
+    , mtl >=2.2 && <2.3
     , optparse-applicative >=0.15.0.0 && <0.16
     , serialport >=0.4.7 && <0.5
     , split >=0.2.3.4 && <0.3
+    , text >=1.2.3.0 && <1.3
+    , time >=1.8 && <1.10
+    , unordered-containers >=0.2.8.0 && <0.3
+    , yaml >=0.11.1.0 && <0.12
   default-language: Haskell2010
 
 test-suite backend-test
@@ -81,8 +95,14 @@ test-suite backend-test
     , base >=4.7 && <5
     , binary >=0.8.6.0 && <0.9
     , bytestring >=0.10.10.0 && <0.11
+    , containers >=0.6.2.1 && <0.7
     , hspec
+    , mtl >=2.2 && <2.3
     , optparse-applicative >=0.15.0.0 && <0.16
     , serialport >=0.4.7 && <0.5
     , split >=0.2.3.4 && <0.3
+    , text >=1.2.3.0 && <1.3
+    , time >=1.8 && <1.10
+    , unordered-containers >=0.2.8.0 && <0.3
+    , yaml >=0.11.1.0 && <0.12
   default-language: Haskell2010
