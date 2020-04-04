@@ -22,39 +22,39 @@ data Prop
   = Prop
     { name :: String
     , address :: Int
-    , defaultValue :: PropValue
+    , defaultValue :: Value
     }
   deriving (Show, Eq, Generic, ToJSON)
 
-data PropValue
-  = PropValueInt Int
-  | PropValueIntList [Int]
-  | PropValueString String
+data Value
+  = ValueInteger Int
+  | ValueIntegerList [Int]
+  | ValueString String
   deriving (Show, Eq, Generic, ToJSON)
 
-parsePropValue :: A.Value -> A.Parser PropValue
-parsePropValue = withObject "value" $ \o ->
-  case HM.lookup "defaultValue" o of
+parseValue :: A.Value -> A.Parser Value
+parseValue = withObject "value" $ \o ->
+  case HM.lookup "default-value" o of
     Just (A.Number x) -> case floatingOrInteger x of
       Left f -> fail "expected an integer"
-      Right n -> return $ PropValueInt n
-    Just (A.String x) -> return $ PropValueString (T.unpack x)
+      Right n -> return $ ValueInteger n
+    Just (A.String x) -> return $ ValueString (T.unpack x)
     -- Just (A.Array xs) -> return _
-    Nothing -> fail "expected a number or string"
+    Nothing -> fail "expected an integer or string"
 
-parsePropSettings :: A.Value -> A.Parser (Int, PropValue)
-parsePropSettings = withObject "settings" $ \o -> do
+parseSettings :: A.Value -> A.Parser (Int, Value)
+parseSettings = withObject "settings" $ \o -> do
   address <- o .: "address"
-  defaultValue <- parsePropValue (A.Object o)
+  defaultValue <- parseValue (A.Object o)
   return (address, defaultValue)
 
--- decodeEither' "TagReader1:\n  address: 1\n  defaultValue: 1" :: Either ParseException Prop
--- decodeEither' "Door:\n  address: 3\n  defaultValue: \"Closed\"" :: Either ParseException Prop
+-- decodeEither' "Tag Reader 1:\n  address: 1\n  default-value: 1" :: Either ParseException Prop
+-- decodeEither' "Door:\n  address: 3\n  default-value: \"Closed\"" :: Either ParseException Prop
 instance FromJSON Prop where
   parseJSON = withObject "prop" $ \o -> do
     let [(name', settings)] = HM.toList o
     let name = T.unpack name'
-    (address, defaultValue) <- parsePropSettings settings
+    (address, defaultValue) <- parseSettings settings
     return $ Prop name address defaultValue
 
 -- data Config = Config
