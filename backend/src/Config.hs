@@ -15,57 +15,47 @@ import qualified Data.Aeson.Types as A
 import qualified Data.Text as T
 import qualified Data.HashMap.Strict as HM
 import Control.Applicative ((<|>))
+import Data.Scientific (floatingOrInteger)
+import Data.Maybe (fromJust)
 
 data Prop
   = Prop
     { name :: String
-    , settings :: Settings
-    , state :: PropState
+    , address :: Int
+    , defaultValue :: PropValue
     }
   deriving (Show, Eq, Generic, ToJSON)
 
-data PropState
-  = PropState
-    { value :: String
-    , timestamp :: Integer
-    }
-  deriving (Show, Eq, Generic, ToJSON, FromJSON)
-
-data Settings
-  = Settings
-    { address :: Int
-    , values :: [String]
-    , defaultValue :: String
-    }
+data PropValue
+  = PropValueInt Int
+  | PropValueIntList [Int]
+  | PropValueString String
   deriving (Show, Eq, Generic, ToJSON)
 
-instance FromJSON Settings where
-  parseJSON = withObject "options" $ \o -> do
-    address <- o .: "address"
-    values <- (o .: "values" <|> (map showInt <$> o .: "values"))
-    defaultValue <- (o .: "defaultValue" <|> (showInt <$> o .: "defaultValue"))
-    if defaultValue `elem` values
-      then return $ Settings address values defaultValue
-      else fail "Default value is not in list of possible values"
-    where
-      showInt :: Int -> String
-      showInt = show
+parsePropValue :: A.Value -> A.Parser PropValue
+parsePropValue = withObject "value" $ \o ->
+  case HM.lookup "defaultValue" o of
+    Just (A.Number x) -> case floatingOrInteger x of
+      Left f -> fail "expected an integer"
+      Right n -> return $ PropValueInt n
+    Just (A.String x) -> return $ PropValueString (T.unpack x)
+    -- Just (A.Array xs) -> return _
+    Nothing -> fail "expected a number or string"
 
+parsePropSettings :: A.Value -> A.Parser (Int, PropValue)
+parsePropSettings = withObject "settings" $ \o -> do
+  address <- o .: "address"
+  defaultValue <- parsePropValue (A.Object o)
+  return (address, defaultValue)
+
+-- decodeEither' "TagReader1:\n  address: 1\n  defaultValue: 1" :: Either ParseException Prop
+-- decodeEither' "Door:\n  address: 3\n  defaultValue: \"Closed\"" :: Either ParseException Prop
 instance FromJSON Prop where
   parseJSON = withObject "prop" $ \o -> do
-    let [(name, settings)] = HM.toList o
-    let name' = T.unpack name
-    settings' <- parseJSON settings
-    return $ Prop name' settings' (PropState (defaultValue settings') 0)
-
-
--- type Timestamp = Integer
--- data PropState = PropState
---   { prop :: Prop
---   , timestamp :: Timestamp
---   }
---   deriving (Show)
-
+    let [(name', settings)] = HM.toList o
+    let name = T.unpack name'
+    (address, defaultValue) <- parsePropSettings settings
+    return $ Prop name address defaultValue
 
 -- data Config = Config
 --   { props :: [Prop]
