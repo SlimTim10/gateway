@@ -27,29 +27,31 @@ data Prop
   deriving (Show, Eq, Generic, ToJSON)
 
 data Value
-  = ValueInteger Int
-  | ValueIntegerList [Int]
-  | ValueString String
+  = Integer Int
+  | IntegerList [Int]
+  | String String
   deriving (Show, Eq, Generic, ToJSON)
-
-parseValue :: A.Value -> A.Parser Value
-parseValue = withObject "value" $ \o ->
-  case HM.lookup "default-value" o of
-    Just (A.Number x) -> case floatingOrInteger x of
-      Left f -> fail "expected an integer"
-      Right n -> return $ ValueInteger n
-    Just (A.String x) -> return $ ValueString (T.unpack x)
-    -- Just (A.Array xs) -> return _
-    Nothing -> fail "expected an integer or string"
 
 parseSettings :: A.Value -> A.Parser (Int, Value)
 parseSettings = withObject "settings" $ \o -> do
   address <- o .: "address"
-  defaultValue <- parseValue (A.Object o)
+  valueType <- o .: "value-type"
+  defaultValue <- case valueType of
+    "integer" -> do
+      dv <- o .: "default-value"
+      return $ Integer dv
+    "integer-list" -> do
+      dv <- o .: "default-value"
+      return $ IntegerList dv
+    "string" -> do
+      dv <- o .: "default-value"
+      return $ String dv
+    _ -> fail $ "unknown value-type: " ++ valueType
   return (address, defaultValue)
 
--- decodeEither' "Tag Reader 1:\n  address: 1\n  default-value: 1" :: Either ParseException Prop
--- decodeEither' "Door:\n  address: 3\n  default-value: \"Closed\"" :: Either ParseException Prop
+-- decodeEither' "Tag Reader 1:\n  address: 1\n  value-type: integer\n  default-value: 1" :: Either ParseException Prop
+-- decodeEither' "Door:\n  address: 3\n  value-type: string\n  default-value: \"Closed\"" :: Either ParseException Prop
+-- decodeEither' "Tag Reader 1:\n  address: 1\n  value-type: integer-list\n  default-value: [0,0,0]" :: Either ParseException Prop
 instance FromJSON Prop where
   parseJSON = withObject "prop" $ \o -> do
     let [(name', settings)] = HM.toList o
