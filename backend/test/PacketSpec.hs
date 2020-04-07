@@ -1,7 +1,6 @@
 module PacketSpec (spec) where
 
 import Test.Hspec
-import Control.Exception (evaluate)
 
 import Data.Either (isLeft, isRight)
 import qualified Data.ByteString.Char8 as B

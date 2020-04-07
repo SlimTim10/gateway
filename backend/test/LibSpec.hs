@@ -1,7 +1,6 @@
 module LibSpec (spec) where
 
 import Test.Hspec
-import Control.Exception (evaluate)
 
 import GHC.Generics (Generic)
 import Data.Aeson (FromJSON)
