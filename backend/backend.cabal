@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9c257b3606ddf29d839b43101867357a836db301e2ea82c307b875541bfc09c0
+-- hash: 7fc4f1e7cae688f11986b1eef20d5f50316c390f2531293e22d5e3abec9d3a28
 
 name:           backend
 version:        0.1.0.0
@@ -27,6 +27,7 @@ source-repository head
 
 library
   exposed-modules:
+      Encoding
       Lib
       Packet
   other-modules:
@@ -68,6 +69,7 @@ test-suite backend-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      EncodingSpec
       LibSpec
       PacketSpec
       Paths_backend
