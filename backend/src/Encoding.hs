@@ -1,10 +1,10 @@
 module Encoding
-  -- (
-  -- )
+  ( encode
+  , decode
+  )
   where
 
 import qualified Data.ByteString.Char8 as B
-import Data.List.Split (splitOn)
 import Data.Char (chr, ord)
 
 encode :: B.ByteString -> B.ByteString
