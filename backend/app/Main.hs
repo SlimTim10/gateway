@@ -5,22 +5,20 @@ import System.Hardware.Serialport
   ( openSerial
   , closeSerial
   , defaultSerialSettings
-  , SerialPort(..)
+  , SerialPort
   , SerialPortSettings(..)
-  , CommSpeed(..)
   , recv
-  , flush
   )
 import Control.Concurrent (threadDelay)
-import Text.Printf (printf)
-import Data.Semigroup ((<>))
 import Options.Applicative (execParser)
-import Data.Char (chr, ord)
 import Control.Monad (forM_)
 
 import Options (options, Options(..))
 
 import Packet (fromASCIIBytes)
+
+import Packet (Packet(..))
+import Data.Yaml (encode)
 
 secondsToMicro :: Int -> Int
 secondsToMicro = (* 1000) . (* 1000)
@@ -57,3 +55,8 @@ recvLine' bs newline s = case newline `B.stripSuffix` bs of
       if B.null b
         then return Nothing
         else recvLine' (bs <> b) newline s
+
+test :: IO ()
+test = do
+  let p = Packet { propAddress = 1, payload = [3, 2, 1] }
+  print $ encode p

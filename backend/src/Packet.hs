@@ -11,7 +11,7 @@ module Packet
   , readPacket
   ) where
 
-import Prelude hiding (length, index)
+import Prelude hiding (length)
 import GHC.Generics (Generic)
 import Data.Aeson
   ( FromJSON
@@ -22,7 +22,6 @@ import Data.ByteString.Char8 (ByteString)
 import Data.ByteString.Lazy.Char8 (fromStrict)
 import qualified Data.Binary.Get as Bin
 import Data.Char (chr, ord)
-import Data.Maybe (fromJust, isNothing)
 
 import Lib (readJSON)
 
@@ -52,11 +51,13 @@ data HeaderFormat = HeaderFormat
   }
   deriving (Show)
 
+packetFormat :: PacketFormat
 packetFormat = PacketFormat
   { header = headerFormat
   , payload = payloadFormat
   }
 
+headerFormat :: HeaderFormat
 headerFormat = HeaderFormat
   { indexH = 0
   , lengthH = 5
@@ -70,6 +71,7 @@ headerFormat = HeaderFormat
     }
   }
 
+payloadFormat :: Format
 payloadFormat = Format
   { index = lengthH headerFormat
   , length = 255

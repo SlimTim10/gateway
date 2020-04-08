@@ -1,0 +1,63 @@
+props:
+  - Tag Reader 1:
+    address: 1
+    value-type: integer
+    default-value: 0
+    
+  - Tag Reader 2:
+    address: 2
+    value-type: integer
+    default-value: 0
+    
+  - Door:
+    address: 3
+    value-type: string
+    default-value: closed
+
+  - Card Table Slot 1:
+    address: 4
+    value-type: integer
+    default-value: 0
+  - Card Table Slot 2:
+    address: 5
+    value-type: integer
+    default-value: 0
+  - Card Table Slot 3:
+    address: 6
+    value-type: integer
+    default-value: 0
+
+  - Card Table Full:
+    address: 7
+    value-type: integer-list
+    default-value: [0,0,0]
+
+rules:
+  - rule-basic:
+    trigger:
+      - Tag Reader 1: 1
+    action:
+      - Door: open
+  
+  - rule-basic:
+      trigger:
+        - Tag Reader 1: 3
+        - Tag Reader 2: 2
+      action:
+        - Door: open
+          
+  - rule-sequence:
+      trigger:
+        - Tag Reader 1: 1
+        - Tag Reader 2: 2
+      action:
+        - Door: closed
+          
+  - rule-timed-sequence:
+      trigger:
+        - Tag Reader 1: 2
+          time: 0
+        - Tag Reader 2: 3
+          time: 1
+      action:
+        - Door: open
