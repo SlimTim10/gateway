@@ -1,6 +1,8 @@
 module Encoding
   ( encode
   , decode
+  , encodeCOBS
+  , decodeCOBS
   )
   where
 
