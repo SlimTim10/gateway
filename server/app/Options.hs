@@ -1,7 +1,6 @@
 module Options (options, Options(..)) where
 
 import Options.Applicative
-import Data.Semigroup ((<>))
 import System.Hardware.Serialport (CommSpeed(..))
 import Data.List (intercalate)
 import Data.List.Split (splitOn)

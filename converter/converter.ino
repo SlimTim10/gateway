@@ -15,7 +15,7 @@ static Radio radio(RF_CS, RF_G0, RF_RST);
 void setup(void) {
 	Serial.begin(115200);
 	while (!Serial);
-	Serial.println("Initializing receiver");
+	Serial.println("Initializing converter");
 
 	enum radio_errno radio_err = initializeRadio(&radio);
 	if (radio_err != RADIO_ERRNO__SUCCESS) {
