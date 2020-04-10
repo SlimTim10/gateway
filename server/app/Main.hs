@@ -11,14 +11,14 @@ import System.Hardware.Serialport
   )
 import Control.Concurrent (threadDelay)
 import Options.Applicative (execParser)
-import Control.Monad (forM_)
 
 import Options (options, Options(..))
 
-import Packet (fromASCIIBytes)
+import Packet (fromBytes)
 
 import Packet (Packet(..))
-import Data.Yaml (encode)
+import qualified Data.Yaml as Yaml
+import Encoding (decodeCOBS, cobsBoundary)
 
 secondsToMicro :: Int -> Int
 secondsToMicro = (* 1000) . (* 1000)
@@ -27,36 +27,46 @@ main :: IO ()
 main = run =<< execParser options
 
 run :: Options -> IO ()
-run (Options port baud newline) = do
+run (Options port baud) = do
   s <- openSerial port defaultSerialSettings { commSpeed = baud }
   wait
-  loop newline s
+  loop s
   closeSerial s
   where
     wait = threadDelay $ secondsToMicro 3
 
-loop :: String -> SerialPort -> IO ()
-loop newline s = do
-  line <- recvLine (B.pack newline) s
-  forM_ line $ \bs -> do
-    either putStrLn print (fromASCIIBytes bs)
-  loop newline s
+loop :: SerialPort -> IO ()
+loop s = do
+  rawPacket <- recvPacket s
+  either putStrLn print $ (fromBytes . decodeCOBS $ rawPacket)
+  loop s
 
-recvLine :: B.ByteString -> SerialPort -> IO (Maybe B.ByteString)
-recvLine = recvLine' ""
+recvPacket :: SerialPort -> IO (B.ByteString)
+recvPacket s = do
+  let valid x = not $ B.null x || x == cobsBoundary
+  b <- serialDropWhile (not . valid) s
+  bs <- serialTakeWhile valid s
+  return (b <> bs)
 
-recvLine' :: B.ByteString -> B.ByteString -> SerialPort -> IO (Maybe B.ByteString)
-recvLine' bs newline s = case newline `B.stripSuffix` bs of
-  Nothing -> next
-  line -> return line
+serialDropWhile :: (B.ByteString -> Bool) -> SerialPort -> IO (B.ByteString)
+serialDropWhile p s = do
+  b <- recv s 1
+  if p b
+    then serialDropWhile p s
+    else
+    do return b
+
+serialTakeWhile :: (B.ByteString -> Bool) -> SerialPort -> IO (B.ByteString)
+serialTakeWhile p s = go ""
   where
-    next = do
+    go :: B.ByteString -> IO (B.ByteString)
+    go bs = do
       b <- recv s 1
-      if B.null b
-        then return Nothing
-        else recvLine' (bs <> b) newline s
+      if p b
+        then go (bs <> b)
+        else return bs
 
 test :: IO ()
 test = do
   let p = Packet { propAddress = 1, payload = [3, 2, 1] }
-  print $ encode p
+  print $ Yaml.encode p

@@ -2,13 +2,10 @@ module Options (options, Options(..)) where
 
 import Options.Applicative
 import System.Hardware.Serialport (CommSpeed(..))
-import Data.List (intercalate)
-import Data.List.Split (splitOn)
 
 data Options = Options
   { port :: String
   , baud :: CommSpeed
-  , newline :: String
   }
 
 parseOptions :: Parser Options
@@ -26,14 +23,6 @@ parseOptions = Options
     <> showDefault
     <> value CS115200
     <> help "Baud rate"
-  )
-  <*> option parseNewline
-  ( long "newline"
-    <> short 'n'
-    <> metavar "NEWLINE"
-    <> showDefault
-    <> value "\r\n"
-    <> help "Newline string suffix"
   )
 
 options :: ParserInfo Options
@@ -56,11 +45,3 @@ parseBaud = eitherReader $ \s -> case s of
   "57600" -> Right CS57600
   "115200" -> Right CS115200
   _ -> Left "Invalid baud rate"
-
-parseNewline :: ReadM String
-parseNewline = eitherReader $ \s -> case s of
-  "" -> Left "Newline cannot be empty"
-  _ -> Right $ replace "\\r" "\r" . replace "\\n" "\n" $ s
-
-replace :: Eq a => [a] -> [a] -> [a] -> [a]
-replace old new = intercalate new . splitOn old
