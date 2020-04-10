@@ -9,6 +9,7 @@
 #include <Arduino.h>
 
 #include <functional.h>
+#include <encoding.h>
 
 static Radio radio(RF_CS, RF_G0, RF_RST);
 
@@ -44,8 +45,12 @@ static inline void handleRadio(void) {
 	uint8_t packet[PACKET_MAX_LENGTH];
 	uint8_t len = sizeof(packet);
 	if (radio.recv(packet, &len)) {
-		forEach(packet, len, serialSendHex);
-		Serial.println();
+		uint8_t buf[COBS_ENCODE_MAX_LENGTH];
+		uint8_t *encPacket = encodeCOBS(packet, buf, len);
+		uint8_t encLen = len + 1;
+		forEach(encPacket, encLen, Serial.write);
+		/* In case of a following packet without delay */
+		Serial.write(COBS_BOUNDARY);
 		Serial.flush();
 	}
 }
@@ -59,12 +64,4 @@ static inline void handleSerial(void) {
 		packet[len] = Serial.read();
 	}
 	sendPacket(&radio, packet, len);
-}
-
-static void serialSend(uint8_t b) {
-	Serial.print(b);
-}
-
-static void serialSendHex(uint8_t b) {
-	Serial.print(b, HEX);
 }
