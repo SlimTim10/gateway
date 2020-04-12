@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8148a0716302a5a6ef7368fb85a17677d83782baa7ce22bc784567de92b3de1a
+-- hash: 1b04a4bd26a8c43465c838e7154d7d89b48fded95087450203b8103f0a324b7d
 
 name:           server
 version:        0.1.0.0
@@ -32,6 +32,7 @@ library
       GameState
       Lib
       Packet
+      ReliableSerial
   other-modules:
       Paths_server
   hs-source-dirs:
@@ -88,6 +89,7 @@ test-suite server-test
       EncodingSpec
       LibSpec
       PacketSpec
+      ReliableSerialSpec
       Paths_server
   hs-source-dirs:
       test

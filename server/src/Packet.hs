@@ -17,7 +17,6 @@ import Data.Aeson
   , ToJSON
   )
 import qualified Data.ByteString.Char8 as B
-import Data.ByteString.Char8 (ByteString)
 import Data.ByteString.Lazy.Char8 (fromStrict)
 import qualified Data.Binary.Get as Bin
 import Data.Char (ord)
@@ -76,26 +75,26 @@ payloadFormat = Format
   , length = 255
   }
 
-slice :: Int -> Int -> ByteString -> ByteString
+slice :: Int -> Int -> B.ByteString -> B.ByteString
 slice start length = B.take length . B.drop start
 
-getWord32 :: ByteString -> Int
+getWord32 :: B.ByteString -> Int
 getWord32 bs = fromIntegral $ Bin.runGet Bin.getWord32be (fromStrict bs)
 
-getWord16 :: ByteString -> Int
+getWord16 :: B.ByteString -> Int
 getWord16 bs = fromIntegral $ Bin.runGet Bin.getWord16be (fromStrict bs)
 
-getWord8 :: ByteString -> Int
+getWord8 :: B.ByteString -> Int
 getWord8 bs = fromIntegral $ Bin.runGet Bin.getWord8 (fromStrict bs)
 
-getInt :: ByteString -> Int
+getInt :: B.ByteString -> Int
 getInt bs = case B.length bs of
   0 -> 0
   1 -> getWord8 bs
   2 -> getWord16 bs
   _ -> getWord32 bs
 
-type RawPacket = ByteString
+type RawPacket = B.ByteString
 
 getPayloadLength :: RawPacket -> Int
 getPayloadLength raw = getInt plRaw
