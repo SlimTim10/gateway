@@ -30,6 +30,7 @@ import Encoding
   , cobsEncode
   )
 
+-- Packets are surrounded by null bytes, have two check bytes at the end, and are COBS-encoded
 recvPacket :: SerialPort -> IO (Either String B.ByteString)
 recvPacket s = do
   b <- serialDropWhile (not . valid) s
