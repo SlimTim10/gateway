@@ -3,7 +3,8 @@ module ReliableSerial
   , sendPacket
   , fletcher16
   , check
-  , addCheckBytes
+  , withCheckBytes
+  , withoutCheckBytes
   ) where
 
 import qualified Data.ByteString.Char8 as B
@@ -33,9 +34,11 @@ recvPacket :: SerialPort -> IO (Either String B.ByteString)
 recvPacket s = do
   b <- serialDropWhile (not . valid) s
   bs <- serialTakeWhile valid s
+  let raw = cobsDecode (b <> bs)
+  let pkt = withoutCheckBytes raw
   return $
-    if check . cobsDecode $ bs
-    then Right (b <> bs)
+    if check raw
+    then Right pkt
     else Left "Invalid checksum"
   where
     valid :: B.ByteString -> Bool
@@ -47,7 +50,7 @@ recvPacket s = do
       ]
 
 sendPacket :: SerialPort -> B.ByteString -> IO (Int)
-sendPacket s = send s . cobsEncode . addCheckBytes
+sendPacket s = send s . cobsEncode . withCheckBytes
 
 excludedByte :: B.ByteString
 excludedByte = B.singleton $ chr 0x00
@@ -55,8 +58,8 @@ excludedByte = B.singleton $ chr 0x00
 check :: B.ByteString -> Bool
 check bs = fletcher16 bs == 0x0000
 
-addCheckBytes :: B.ByteString -> B.ByteString
-addCheckBytes bs = bs `B.append` checkBytes
+withCheckBytes :: B.ByteString -> B.ByteString
+withCheckBytes bs = bs `B.append` checkBytes
   where
     csum = fletcher16 bs
     f0 = csum .&. 0xFF
@@ -64,6 +67,9 @@ addCheckBytes bs = bs `B.append` checkBytes
     c0 = 0xFF - ((f0 + f1) `mod` 0xFF)
     c1 = 0xFF - ((f0 + c0) `mod` 0xFF)
     checkBytes = B.pack . map (chr . fromIntegral ) $ [c0, c1]
+
+withoutCheckBytes :: B.ByteString -> B.ByteString
+withoutCheckBytes bs = B.take (B.length bs - 2) bs
 
 serialDropWhile :: (B.ByteString -> Bool) -> SerialPort -> IO (B.ByteString)
 serialDropWhile p s = do

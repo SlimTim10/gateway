@@ -38,8 +38,17 @@ spec = do
       let xs = fromBytes [0x01, 0x02, 0x00, 0x00]
       check xs `shouldBe` False
 
-  describe "addCheckBytes" $ do
-    it "adds check bytes to packets" $ do
+  describe "withCheckBytes" $ do
+    it "returns a packet with check bytes included at the end" $ do
       let xs = fromBytes [0x01, 0x02]
       let ys = fromBytes [0x01, 0x02, 0xF8, 0x04]
-      addCheckBytes xs `shouldBe` ys
+      withCheckBytes xs `shouldBe` ys
+
+  describe "withoutCheckBytes" $ do
+    it "returns an empty packet given an empty packet" $ do
+      withoutCheckBytes B.empty `shouldBe` B.empty
+
+    it "returns a packet without check bytes" $ do
+      let xs = fromBytes [0x01, 0x02, 0xF8, 0x04]
+      let ys = fromBytes [0x01, 0x02]
+      withoutCheckBytes xs `shouldBe` ys
