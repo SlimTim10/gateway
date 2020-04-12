@@ -33,31 +33,34 @@ props:
     default-value: [0,0,0]
 
 rules:
-  - rule-basic:
+  - type: basic
+    # Give a description of the rule (optional)
+    description: First puzzle
     trigger:
       - Tag Reader 1: 1
     action:
       - Door: open
   
-  - rule-basic:
-      trigger:
-        - Tag Reader 1: 3
-        - Tag Reader 2: 2
-      action:
-        - Door: open
+  - type: basic
+    description: Alternate solution to first puzzle
+    trigger:
+      - Tag Reader 1: 3
+      - Tag Reader 2: 2
+    action:
+      - Door: open
           
-  - rule-sequence:
-      trigger:
-        - Tag Reader 1: 1
-        - Tag Reader 2: 2
-      action:
-        - Door: closed
+  - type: sequence
+    trigger:
+      - Tag Reader 1: 1
+      - Tag Reader 2: 2
+    action:
+      - Door: closed
           
-  - rule-timed-sequence:
-      trigger:
-        - Tag Reader 1: 2
-          time: 0
-        - Tag Reader 2: 3
-          time: 1
-      action:
-        - Door: open
+  - type: timed-sequence
+    trigger:
+      - Tag Reader 1: 2
+        time: 0
+      - Tag Reader 2: 3
+        time: 1
+    action:
+      - Door: open
