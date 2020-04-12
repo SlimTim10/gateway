@@ -1,5 +1,6 @@
 module Packet
   ( Packet(..)
+  , RawPacket
   , fromBytes
   , getPayloadLength
   , packetFormat
@@ -22,6 +23,8 @@ import qualified Data.Binary.Get as Bin
 import Data.Char (ord)
 
 import Lib (readJSON)
+
+type RawPacket = B.ByteString
 
 data Packet = Packet
   { propAddress :: Int
@@ -93,8 +96,6 @@ getInt bs = case B.length bs of
   1 -> getWord8 bs
   2 -> getWord16 bs
   _ -> getWord32 bs
-
-type RawPacket = B.ByteString
 
 getPayloadLength :: RawPacket -> Int
 getPayloadLength raw = getInt plRaw

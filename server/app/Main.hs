@@ -24,7 +24,7 @@ import Packet
   , Packet(..)
   )
 import ReliableSerial
-  ( recvPacket
+  ( recvRawPacket
   )
 
 secondsToMicro :: Int -> Int
@@ -44,11 +44,12 @@ run (Options port baud) = do
 
 serialLoop :: SerialPort -> IO ()
 serialLoop s = do
-  eRawPacket <- recvPacket s
+  eRawPacket <- recvRawPacket s
   case eRawPacket of
     Left e -> putStrLn $ "Error: " ++ e
-    Right rawPacket ->
-      either putStrLn print $ (fromBytes rawPacket)
+    Right rawPacket -> do
+      let p = fromBytes rawPacket
+      either putStrLn print p
   serialLoop s
 
 test :: IO ()

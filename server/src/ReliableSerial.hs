@@ -1,6 +1,6 @@
 module ReliableSerial
-  ( recvPacket
-  , sendPacket
+  ( recvRawPacket
+  , sendRawPacket
   , fletcher16
   , check
   , withCheckBytes
@@ -25,14 +25,17 @@ import Data.Char
   , ord
   )
 
+import Packet
+  ( RawPacket
+  )
 import Encoding
   ( cobsDecode
   , cobsEncode
   )
 
 -- Packets are surrounded by null bytes, have two check bytes at the end, and are COBS-encoded
-recvPacket :: SerialPort -> IO (Either String B.ByteString)
-recvPacket s = do
+recvRawPacket :: SerialPort -> IO (Either String RawPacket)
+recvRawPacket s = do
   b <- serialDropWhile (not . valid) s
   bs <- serialTakeWhile valid s
   let raw = cobsDecode (b <> bs)
@@ -50,8 +53,8 @@ recvPacket s = do
       , (== excludedByte)
       ]
 
-sendPacket :: SerialPort -> B.ByteString -> IO (Int)
-sendPacket s = send s . cobsEncode . withCheckBytes
+sendRawPacket :: SerialPort -> RawPacket -> IO (Int)
+sendRawPacket s = send s . cobsEncode . withCheckBytes
 
 excludedByte :: B.ByteString
 excludedByte = B.singleton $ chr 0x00
