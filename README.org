@@ -2,3 +2,9 @@
 
 ** Description
 
+** Converter Dependencies
+
+- Puzzles
+- ArduinoProps
+- FunctionalC
+- ReliableSerial
