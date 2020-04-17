@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1b04a4bd26a8c43465c838e7154d7d89b48fded95087450203b8103f0a324b7d
+-- hash: 7c514de9ec949688f8d87223ab6d119be4ce353ba71e9194ecffbc6489c4587d
 
 name:           server
 version:        0.1.0.0
@@ -27,11 +27,13 @@ source-repository head
 
 library
   exposed-modules:
+      Command
       Config
       Encoding
       GameState
       Lib
       Packet
+      Prop
       ReliableSerial
   other-modules:
       Paths_server
