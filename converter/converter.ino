@@ -9,9 +9,10 @@
 #include <Arduino.h>
 
 #include <functional.h>
-#include <encoding.h>
+#include <ReliableSerial.h>
 
 static Radio radio(RF_CS, RF_G0, RF_RST);
+static uint8_t packet[SERIAL_PACKET_MAX_LENGTH];
 
 void setup(void) {
 	Serial.begin(115200);
@@ -37,31 +38,21 @@ void loop(void) {
 	}
 }
 
-static inline void waitForSerialData(void) {
-	delay(100);
-}
-
 static inline void handleRadio(void) {
-	uint8_t packet[PACKET_MAX_LENGTH];
-	uint8_t len = sizeof(packet);
-	if (radio.recv(packet, &len)) {
-		uint8_t buf[COBS_ENCODE_MAX_LENGTH];
-		uint8_t *encPacket = encodeCOBS(packet, buf, len);
-		uint8_t encLen = len + 1;
-		forEach(encPacket, encLen, Serial.write);
-		/* In case of a following packet without delay */
-		Serial.write(COBS_BOUNDARY);
-		Serial.flush();
+	uint8_t length = sizeof(packet);
+	
+	if (radio.recv(packet, &length)) {
+		if (length > PACKET_MAX_LENGTH) return;
+		serialSendPacket(packet, length);
 	}
 }
 
 static inline void handleSerial(void) {
-	waitForSerialData();
+	uint8_t length = sizeof(packet);
 
-	uint8_t packet[PACKET_MAX_LENGTH];
-	size_t len;
-	for (len = 0; Serial.available() > 0 && len < PACKET_MAX_LENGTH; len++) {
-		packet[len] = Serial.read();
+	if (serialRecvPacket(packet, &length)) {
+		if (length > 0) {
+			sendPacket(&radio, packet, length);
+		}
 	}
-	sendPacket(&radio, packet, len);
 }
