@@ -1,10 +1,47 @@
 * Gateway
 
-** Description
+** Converter
 
-** Converter Dependencies
+An Arduino-based wireless-to-serial converter to facilitate communication between the server and the props.
 
-- Puzzles
-- ArduinoProps
-- FunctionalC
-- ReliableSerial
+After setting up the hardware, [[https://www.arduino.cc/en/Guide/HomePage][upload]] the ~converter.ino~ sketch to the Arduino. Connect the Arduino to a computer running the server with a USB cable, which will power the converter and allow serial communication.
+
+*** Hardware and wiring
+
+- [[http://arduino.cc/en/Main/arduinoBoardUno][Arduino Uno]]
+- [[https://www.hoperf.com/data/upload/portal/20190307/RFM69HCW-V1.1.pdf][RFM69HCW transceiver]]
+  - [[https://www.digikey.ca/product-detail/en/adafruit-industries-llc/3070/1528-1665-ND/6005355][DigiKey]]
+
+| Arduino Uno | RFM69HCW |
+|-------------+----------|
+| GND         | GND      |
+| 5V          | VIN      |
+| 2           | G0       |
+| 13/ICSP-3   | SCK      |
+| 12/ICSP-1   | MISO     |
+| 11/ICSP-4   | MOSI     |
+| 9           | CS       |
+| 3           | RST      |
+
+If the RF transceiver does not come with an antenna, solder a 7.8 cm solid core wire (straightened) to the module's antenna pin for a quarter-wavelength monopole antenna.
+
+*** Dependencies
+
+- [[https://github.com/SlimTim10/ArduinoProps][ArduinoProps]]
+- [[https://github.com/SlimTim10/FunctionalC][FunctionalC]]
+- [[https://github.com/SlimTim10/ReliableSerial][ReliableSerial]]
+
+** Server
+
+A Haskell application to act as the brain of the platform.
+
+Build the project using [[https://docs.haskellstack.org/en/stable/README/][Stack]].
+
+#+BEGIN_EXAMPLE
+stack setup
+stack build
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+stack exec server-exe -- -p COM19
+#+END_EXAMPLE
