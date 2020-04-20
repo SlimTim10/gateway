@@ -1,7 +1,5 @@
 #include "hal.h"
 
-#include <Puzzles.h>
-
 #include <ArduinoProps.h>
 #include <ArduinoProps_config.h>
 #include <ArduinoProps_RF69.h>
