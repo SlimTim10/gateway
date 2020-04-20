@@ -31,7 +31,7 @@ If the RF transceiver does not come with an antenna, solder a 7.8 cm solid core 
 - [[https://github.com/SlimTim10/FunctionalC][FunctionalC]]
 - [[https://github.com/SlimTim10/ReliableSerial][ReliableSerial]]
 
-** Server
+** Server (WIP)
 
 A Haskell application to act as the brain of the platform.
 
