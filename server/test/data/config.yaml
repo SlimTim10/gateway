@@ -1,50 +1,58 @@
 props:
-  - Card Spot 1:
+  - name: Card Spot 1
+    description: RFID tag reader
     address: 0x01
     value-type: integer
     default-value: 0
     
-  - Card Spot 2:
+  - name: Card Spot 2
+    description: RFID tag reader
     address: 0x02
     value-type: integer
     default-value: 0
-    
-  - Card Spot 3:
+
+  - name: Card Spot 3
+    description: RFID tag reader
     address: 0x03
     value-type: integer
     default-value: 0
     
-  - South Door:
+  - name: South Door
+    description: Enter the next room
     address: 0x10
     value-type: string
     default-value: closed
 
-  - Big Lockbox:
+  - name: Big Lockbox
+    description: Holds card 4
     address: 0x20
     value-type: string
     default-value: locked
 
-  - Small Lockbox 1:
+  - name: Small Lockbox 1
+    description: Holds card 2
     address: 0x30
     value-type: string
     default-value: locked
 
-  - Small Lockbox 2:
+  - name: Small Lockbox 2
+    description: Holds the hint to the piano chord
     address: 0x31
     value-type: string
     default-value: locked
 
-  - Button Puzzle:
+  - name: Button Puzzle
     address: 0x40
     value-type: integer
     default-value: 0
 
-  - Mini Piano:
+  - name: Mini Piano
     address: 0x50
     value-type: integer-list
     default-value: [0,0,0,0,0,0,0,0,0,0,0,0,0]
 
-  - East Door:
+  - name: East Door
+    description: Exit the escape room
     address: 0x60
     value-type: string
     default-value: closed
@@ -52,14 +60,14 @@ props:
 rules:
   - type: basic
     # Give a description of the rule (optional)
-    description: First puzzle. Open the South door to get to the next room.
+    description: First puzzle. Open the South door to get to the next room
     trigger:
       - Card Spot 1: 3
     action:
       - South Door: open
 
   - type: sequence
-    description: Get card 4 from the big lockbox.
+    description: Get card 4 from the big lockbox
     trigger:
       - Button Puzzle: 1
       - Button Puzzle: 2
@@ -69,14 +77,14 @@ rules:
       - Big Lockbox: unlocked
 
   - type: basic
-    description: Get card 2 from the first small lockbox.
+    description: Get card 2 from the first small lockbox
     trigger:
       - Card Spot 1: 4
     action:
       - Small Lockbox 1: unlocked
 
   - type: basic
-    description: Get the piano chord from the second small lockbox.
+    description: Get the piano chord from the second small lockbox
     trigger:
       - Card Spot 1: 1
       - Card Spot 2: 2
