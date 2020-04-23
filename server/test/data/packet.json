@@ -1,4 +1,7 @@
 {
   "propAddress": 1,
-  "payload": [3, 2, 1]
+  "commandID": "PayloadInt",
+  "payload": {
+    "Int": 1
+  }
 }
