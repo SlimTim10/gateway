@@ -1,66 +1,101 @@
 props:
-  - Tag Reader 1:
-    address: 1
+  - Card Spot 1:
+    address: 0x01
     value-type: integer
     default-value: 0
     
-  - Tag Reader 2:
-    address: 2
+  - Card Spot 2:
+    address: 0x02
     value-type: integer
     default-value: 0
     
-  - Door:
-    address: 3
+  - Card Spot 3:
+    address: 0x03
+    value-type: integer
+    default-value: 0
+    
+  - South Door:
+    address: 0x10
     value-type: string
     default-value: closed
 
-  - Card Table Slot 1:
-    address: 4
-    value-type: integer
-    default-value: 0
-  - Card Table Slot 2:
-    address: 5
-    value-type: integer
-    default-value: 0
-  - Card Table Slot 3:
-    address: 6
+  - Big Lockbox:
+    address: 0x20
+    value-type: string
+    default-value: locked
+
+  - Small Lockbox 1:
+    address: 0x30
+    value-type: string
+    default-value: locked
+
+  - Small Lockbox 2:
+    address: 0x31
+    value-type: string
+    default-value: locked
+
+  - Button Puzzle:
+    address: 0x40
     value-type: integer
     default-value: 0
 
-  - Card Table Full:
-    address: 7
+  - Mini Piano:
+    address: 0x50
     value-type: integer-list
-    default-value: [0,0,0]
+    default-value: [0,0,0,0,0,0,0,0,0,0,0,0,0]
+
+  - East Door:
+    address: 0x60
+    value-type: string
+    default-value: closed
 
 rules:
   - type: basic
     # Give a description of the rule (optional)
-    description: First puzzle
+    description: First puzzle. Open the South door to get to the next room.
     trigger:
-      - Tag Reader 1: 1
+      - Card Spot 1: 3
     action:
-      - Door: open
-  
-  - type: basic
-    description: Alternate solution to first puzzle
-    trigger:
-      - Tag Reader 1: 3
-      - Tag Reader 2: 2
-    action:
-      - Door: open
-          
+      - South Door: open
+
   - type: sequence
+    description: Get card 4 from the big lockbox.
     trigger:
-      - Tag Reader 1: 1
-      - Tag Reader 2: 2
+      - Button Puzzle: 1
+      - Button Puzzle: 2
+      - Button Puzzle: 3
+      - Button Puzzle: 4
     action:
-      - Door: closed
-          
-  - type: timed-sequence
+      - Big Lockbox: unlocked
+
+  - type: basic
+    description: Get card 2 from the first small lockbox.
     trigger:
-      - Tag Reader 1: 2
-        time: 0
-      - Tag Reader 2: 3
-        time: 1
+      - Card Spot 1: 4
     action:
-      - Door: open
+      - Small Lockbox 1: unlocked
+
+  - type: basic
+    description: Get the piano chord from the second small lockbox.
+    trigger:
+      - Card Spot 1: 1
+      - Card Spot 2: 2
+    action:
+      - Small Lockbox 2: unlocked
+
+  - type: basic
+    description: Play the right chord to get out!
+    trigger:
+      - Mini Piano: [1,0,0,0,1,0,0,1,0,0,0,0,0]
+    action:
+      - East Door: open
+
+  # WIP
+  # - type: timed-sequence
+  #   trigger:
+  #     - Tag Reader 1: 2
+  #       time: 0
+  #     - Tag Reader 2: 3
+  #       time: 1
+  #   action:
+  #     - Door: open
