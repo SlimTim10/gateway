@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a3761016c931075af91c7a7d679de8f52105d71230d02a71ad1ee9a82e4e44fb
+-- hash: ef47d7e1ce0fd091a24cfd37038dbe37bcb0e94ffd8173ebc73f6d6118b1df58
 
 name:           server
 version:        0.1.0.0
@@ -87,6 +87,7 @@ test-suite server-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      ConfigSpec
       EncodingSpec
       LibSpec
       PacketSpec
