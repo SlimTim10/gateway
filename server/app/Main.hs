@@ -27,7 +27,7 @@ import qualified Command as Cmd
 import ReliableSerial
   ( recvRawPacket
   )
-import qualified Prop as Prop
+import qualified Prop
 
 secondsToMicro :: Int -> Int
 secondsToMicro = (* 1000) . (* 1000)

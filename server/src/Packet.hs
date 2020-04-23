@@ -21,7 +21,7 @@ import Data.Char (ord)
 import Lib (readJSON)
 import qualified Command as Cmd
 import Command (Command)
-import qualified Prop as Prop
+import qualified Prop
 
 type RawPacket = B.ByteString
 
