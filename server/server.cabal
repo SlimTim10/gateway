@@ -4,13 +4,13 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7c514de9ec949688f8d87223ab6d119be4ce353ba71e9194ecffbc6489c4587d
+-- hash: a3761016c931075af91c7a7d679de8f52105d71230d02a71ad1ee9a82e4e44fb
 
 name:           server
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/SlimTim10/server#readme>
-homepage:       https://github.com/SlimTim10/server#readme
-bug-reports:    https://github.com/SlimTim10/server/issues
+description:    Please see the README on GitHub at <https://github.com/SlimTim10/gateway#readme>
+homepage:       https://github.com/SlimTim10/gateway#readme
+bug-reports:    https://github.com/SlimTim10/gateway/issues
 author:         SlimTim10
 maintainer:     slimtim10@gmail.com
 copyright:      SlimTim10
@@ -18,12 +18,11 @@ license:        MIT
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
-    README.md
     ChangeLog.md
 
 source-repository head
   type: git
-  location: https://github.com/SlimTim10/server
+  location: https://github.com/SlimTim10/gateway
 
 library
   exposed-modules:

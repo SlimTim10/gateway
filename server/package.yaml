@@ -1,13 +1,12 @@
 name:                server
 version:             0.1.0.0
-github:              "SlimTim10/server"
+github:              "SlimTim10/gateway"
 license:             MIT
 author:              "SlimTim10"
 maintainer:          "slimtim10@gmail.com"
 copyright:           "SlimTim10"
 
 extra-source-files:
-- README.md
 - ChangeLog.md
 
 # Metadata used when publishing your package
@@ -17,7 +16,7 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/SlimTim10/server#readme>
+description:         Please see the README on GitHub at <https://github.com/SlimTim10/gateway#readme>
 
 dependencies:
 - base >= 4.7 && < 5
