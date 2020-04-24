@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ef47d7e1ce0fd091a24cfd37038dbe37bcb0e94ffd8173ebc73f6d6118b1df58
+-- hash: a6e20dcf6042adfaf56b9af081ef9dad45fc8692fe7b1abec68e10ff7363ad18
 
 name:           server
 version:        0.1.0.0
@@ -34,6 +34,7 @@ library
       Packet
       Prop
       ReliableSerial
+      Rule
   other-modules:
       Paths_server
   hs-source-dirs:

@@ -10,8 +10,11 @@ import Data.Yaml
   , parseJSON
   )
 import Data.Word (Word32)
+import qualified Data.Text as T
+import qualified Data.HashMap.Strict as HM
 
 import qualified Prop
+import qualified Rule
 
 data ConfigProp
   = ConfigProp
@@ -30,37 +33,39 @@ instance FromJSON ConfigProp where
     defaultValue <- o .: "default-value"
     return $ ConfigProp name description address defaultValue
 
--- data Trigger
---   = Trigger
---   { propName :: String
---   , value :: Prop.Value
---   }
+data NameValue
+  = NameValue
+  { name :: String
+  , value :: Prop.Value
+  }
+  deriving (Show, Eq, Generic, ToJSON)
 
--- data ConfigRule
---   = ConfigRule
---   { type :: Rule.Type
---   , description :: Maybe String
---   , trigger :: [Trigger]
---   }
+instance FromJSON NameValue where
+  parseJSON = withObject "name-value" $ \o -> do
+    let [(name', value')] = HM.toList o
+    let name = T.unpack name'
+    value <- parseJSON value'
+    return $ NameValue name value
 
--- data Config = Config
---   { props :: [Prop]
---   , rules :: [Rule]
---   }
+data ConfigRule
+  = ConfigRule
+  { ruleType :: Rule.Type
+  , description :: Maybe String
+  , trigger :: [NameValue]
+  , action :: [NameValue]
+  }
+  deriving (Show, Eq, Generic, ToJSON)
 
--- data Rule
---   = RuleBasic [Prop] Prop
---   | RuleSequence [Prop] Prop
---   | RuleTimedSequence [Prop] [Int] Prop
+instance FromJSON ConfigRule where
+  parseJSON = withObject "rule" $ \o -> do
+    ruleType <- o .: "type"
+    description <- o .:? "description"
+    trigger <- o .: "trigger"
+    action <- o .: "action"
+    return $ ConfigRule ruleType description trigger action
 
--- Config
---   { props =
---     [ 
---     ]
---   , triggers =
---     [ RuleBasic [TagReader1 1] (Door Open)
---     , RuleBasic [TagReader1 3, TagReader2 2] (Door Open)
---     , RuleSequence [TagReader1 1, TagReader2 2] (Door Close)
---     , RuleTimedSequence [TagReader1 2, TagReader2 3] [0, 1] (Door Open)
---     ]
---   }
+data Config
+  = Config
+  { props :: [ConfigProp]
+  , rules :: [ConfigRule]
+  }
