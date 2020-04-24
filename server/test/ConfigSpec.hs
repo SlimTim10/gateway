@@ -242,3 +242,131 @@ spec = do
           , NameValue { name = "East Door", value = Prop.String "open" }
           ]
         }
+
+  describe "readConfig" $ do
+    it "parses an entire config file in YAML" $ do
+      True `shouldBe` True
+      result <- readConfig "test/data/config.yaml"
+      result `shouldSatisfy` isRight
+      let (Right config) = result
+      config `shouldBe`
+        Config
+        { props =
+          [ ConfigProp
+            { name = "Card Spot 1"
+            , description = Just "RFID tag reader"
+            , address = 1
+            , defaultValue = Prop.Int 0
+            }
+          , ConfigProp
+            { name = "Card Spot 2"
+            , description = Just "RFID tag reader"
+            , address = 2
+            , defaultValue = Prop.Int 0
+            }
+          , ConfigProp
+            { name = "Card Spot 3"
+            , description = Just "RFID tag reader"
+            , address = 3
+            , defaultValue = Prop.Int 0
+            }
+          , ConfigProp
+            { name = "South Door"
+            , description = Just "Enter the next room"
+            , address = 0x10
+            , defaultValue = Prop.String "closed"
+            }
+          , ConfigProp
+            { name = "Big Lockbox"
+            , description = Just "Holds card 4"
+            , address = 0x20
+            , defaultValue = Prop.String "locked"
+            }
+          , ConfigProp
+            { name = "Small Lockbox 1"
+            , description = Just "Holds card 2"
+            , address = 0x30
+            , defaultValue = Prop.String "locked"
+            }
+          , ConfigProp
+            { name = "Small Lockbox 2"
+            , description = Just "Holds the hint to the piano chord"
+            , address = 0x31
+            , defaultValue = Prop.String "locked"
+            }
+          , ConfigProp
+            { name = "Button Puzzle"
+            , description = Nothing
+            , address = 0x40
+            , defaultValue = Prop.Int 0
+            }
+          , ConfigProp
+            { name = "Mini Piano"
+            , description = Nothing
+            , address = 0x50
+            , defaultValue = Prop.IntList [0,0,0,0,0,0,0,0,0,0,0,0,0]
+            }
+          , ConfigProp
+            { name = "East Door"
+            , description = Just "Exit the escape room"
+            , address = 0x60
+            , defaultValue = Prop.String "closed"
+            }
+          ]
+        , rules =
+          [ ConfigRule
+            { ruleType = Rule.Basic
+            , description = Just "First puzzle. Open the South door to get to the next room"
+            , trigger =
+              [ NameValue { name = "Card Spot 1", value = Prop.Int 3 }
+              ]
+            , action =
+              [ NameValue { name = "South Door", value = Prop.String "open" }
+              ]
+            }
+          , ConfigRule
+            { ruleType = Rule.Sequence
+            , description = Just "Get card 4 from the big lockbox"
+            , trigger =
+              [ NameValue { name = "Button Puzzle", value = Prop.Int 1 }
+              , NameValue { name = "Button Puzzle", value = Prop.Int 2 }
+              , NameValue { name = "Button Puzzle", value = Prop.Int 3 }
+              , NameValue { name = "Button Puzzle", value = Prop.Int 4 }
+              ]
+            , action =
+              [ NameValue { name = "Big Lockbox", value = Prop.String "unlocked" }
+              ]
+            }
+          , ConfigRule
+            { ruleType = Rule.Basic
+            , description = Just "Get card 2 from the first small lockbox"
+            , trigger =
+              [ NameValue { name = "Card Spot 1", value = Prop.Int 4 }
+              ]
+            , action =
+              [ NameValue { name = "Small Lockbox 1", value = Prop.String "unlocked" }
+              ]
+            }
+          , ConfigRule
+            { ruleType = Rule.Basic
+            , description = Just "Get the piano chord from the second small lockbox"
+            , trigger =
+              [ NameValue { name = "Card Spot 1", value = Prop.Int 1 }
+              , NameValue { name = "Card Spot 2", value = Prop.Int 2 }
+              ]
+            , action =
+              [ NameValue { name = "Small Lockbox 2", value = Prop.String "unlocked" }
+              ]
+            }
+          , ConfigRule
+            { ruleType = Rule.Basic
+            , description = Just "Play the right chord to get out!"
+            , trigger =
+              [ NameValue { name = "Mini Piano", value = Prop.IntList [1,0,0,0,1,0,0,1,0,0,0,0,0] }
+              ]
+            , action =
+              [ NameValue { name = "East Door", value = Prop.String "open" }
+              ]
+            }
+          ]
+        }

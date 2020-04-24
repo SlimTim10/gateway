@@ -49,7 +49,6 @@ props:
 
 rules:
   - type: basic
-    # Give a description of the rule (optional)
     description: First puzzle. Open the South door to get to the next room
     trigger:
       - Card Spot 1: 3

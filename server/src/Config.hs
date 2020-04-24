@@ -8,6 +8,8 @@ import Data.Yaml
   , (.:?)
   , withObject
   , parseJSON
+  , decodeFileEither
+  , ParseException
   )
 import Data.Word (Word32)
 import qualified Data.Text as T
@@ -69,3 +71,7 @@ data Config
   { props :: [ConfigProp]
   , rules :: [ConfigRule]
   }
+  deriving (Show, Eq, Generic, ToJSON, FromJSON)
+
+readConfig :: FilePath -> IO (Either ParseException Config)
+readConfig = decodeFileEither
