@@ -17,6 +17,7 @@ import qualified Data.ByteString.Char8 as B
 import Data.ByteString.Lazy.Char8 (fromStrict)
 import qualified Data.Binary.Get as Bin
 import Data.Char (ord)
+import Data.Word (Word8, Word32)
 
 import Lib (readJSON)
 import qualified Command as Cmd
@@ -26,7 +27,7 @@ import qualified Prop
 type RawPacket = B.ByteString
 
 data Packet = Packet
-  { propAddress :: Int
+  { propAddress :: Word32
   , commandID :: Command
   , payload :: Prop.Value
   }
@@ -61,21 +62,11 @@ minPacketSize = n + m
 slice :: Int -> Int -> B.ByteString -> B.ByteString
 slice start len = B.take len . B.drop start
 
-getWord32 :: B.ByteString -> Int
+getWord32 :: B.ByteString -> Word32
 getWord32 bs = fromIntegral $ Bin.runGet Bin.getWord32be (fromStrict bs)
 
-getWord16 :: B.ByteString -> Int
-getWord16 bs = fromIntegral $ Bin.runGet Bin.getWord16be (fromStrict bs)
-
-getWord8 :: B.ByteString -> Int
+getWord8 :: B.ByteString -> Word8
 getWord8 bs = fromIntegral $ Bin.runGet Bin.getWord8 (fromStrict bs)
-
-getInt :: B.ByteString -> Int
-getInt bs = case B.length bs of
-  0 -> 0
-  1 -> getWord8 bs
-  2 -> getWord16 bs
-  _ -> getWord32 bs
 
 payloadValue :: Command -> B.ByteString -> Either String Prop.Value
 payloadValue Cmd.PayloadInt bs
@@ -90,7 +81,7 @@ payloadValue Cmd.PayloadIntList bs
   | B.null bs = Left "Couldn't match expected integer list with empty payload"
   | otherwise = Right $ Prop.IntList ns
   where
-    ns = map ord . B.unpack $ bs
+    ns = map (fromIntegral . ord) . B.unpack $ bs
 payloadValue Cmd.PayloadString bs
   | B.null bs = Left "Couldn't match expected string with empty payload"
   | otherwise = Right $ Prop.String $ B.unpack bs
@@ -109,8 +100,8 @@ fromBytes raw
         , payload = pld
         }
   where
-    addr = getInt . slice addrIdx addrSize $ raw
-    rawCmd = getInt . slice cmdIdx cmdSize $ raw
+    addr = getWord32 . slice addrIdx addrSize $ raw
+    rawCmd = getWord8 . slice cmdIdx cmdSize $ raw
     rawPayload = slice pldIdx pldSize raw
     addrIdx = index . (propAddress :: PacketFormat -> Format) $ packetFormat
     addrSize = size . (propAddress :: PacketFormat -> Format) $ packetFormat

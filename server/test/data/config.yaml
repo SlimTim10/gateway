@@ -2,59 +2,49 @@ props:
   - name: Card Spot 1
     description: RFID tag reader
     address: 0x01
-    value-type: integer
     default-value: 0
-    
+
   - name: Card Spot 2
     description: RFID tag reader
     address: 0x02
-    value-type: integer
     default-value: 0
 
   - name: Card Spot 3
     description: RFID tag reader
     address: 0x03
-    value-type: integer
     default-value: 0
-    
+
   - name: South Door
     description: Enter the next room
     address: 0x10
-    value-type: string
     default-value: closed
 
   - name: Big Lockbox
     description: Holds card 4
     address: 0x20
-    value-type: string
     default-value: locked
 
   - name: Small Lockbox 1
     description: Holds card 2
     address: 0x30
-    value-type: string
     default-value: locked
 
   - name: Small Lockbox 2
     description: Holds the hint to the piano chord
     address: 0x31
-    value-type: string
     default-value: locked
 
   - name: Button Puzzle
     address: 0x40
-    value-type: integer
     default-value: 0
 
   - name: Mini Piano
     address: 0x50
-    value-type: integer-list
     default-value: [0,0,0,0,0,0,0,0,0,0,0,0,0]
 
   - name: East Door
     description: Exit the escape room
     address: 0x60
-    value-type: string
     default-value: closed
 
 rules:

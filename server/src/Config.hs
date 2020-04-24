@@ -5,46 +5,43 @@ import Data.Yaml
   ( FromJSON
   , ToJSON
   , (.:)
+  , (.:?)
   , withObject
   , parseJSON
   )
-import qualified Data.Aeson.Types as A
-import qualified Data.Text as T
-import qualified Data.HashMap.Strict as HM
+import Data.Word (Word32)
 
 import qualified Prop
 
 data ConfigProp
   = ConfigProp
-    { name :: String
-    , address :: Int
-    , defaultValue :: Prop.Value
-    }
+  { name :: String
+  , description :: Maybe String
+  , address :: Word32
+  , defaultValue :: Prop.Value
+  }
   deriving (Show, Eq, Generic, ToJSON)
-
-parseSettings :: A.Value -> A.Parser (Int, Prop.Value)
-parseSettings = withObject "settings" $ \o -> do
-  address <- o .: "address"
-  valueType <- o .: "value-type"
-  defaultValue <- case valueType of
-    "integer" -> do
-      dv <- o .: "default-value"
-      return $ Prop.Int dv
-    "integer-list" -> do
-      dv <- o .: "default-value"
-      return $ Prop.IntList dv
-    "string" -> do
-      dv <- o .: "default-value"
-      return $ Prop.String dv
-    _ -> fail $ "unknown value-type: " ++ valueType
-  return (address, defaultValue)
 
 instance FromJSON ConfigProp where
   parseJSON = withObject "prop" $ \o -> do
-    let [(name', settings)] = HM.toList o
-    let name = T.unpack name'
-    (address, defaultValue) <- parseSettings settings
-    return $ ConfigProp name address defaultValue
+    name <- o .: "name"
+    description <- o .:? "description"
+    address <- o .: "address"
+    defaultValue <- o .: "default-value"
+    return $ ConfigProp name description address defaultValue
+
+-- data Trigger
+--   = Trigger
+--   { propName :: String
+--   , value :: Prop.Value
+--   }
+
+-- data ConfigRule
+--   = ConfigRule
+--   { type :: Rule.Type
+--   , description :: Maybe String
+--   , trigger :: [Trigger]
+--   }
 
 -- data Config = Config
 --   { props :: [Prop]

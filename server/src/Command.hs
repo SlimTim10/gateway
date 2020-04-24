@@ -5,6 +5,7 @@ import Data.Aeson
   ( FromJSON
   , ToJSON
   )
+import Data.Word (Word8)
 
 data Command
   = PayloadInt
@@ -13,7 +14,7 @@ data Command
   | Ping
   deriving (Show, Eq, Generic, ToJSON, FromJSON)
 
-fromInt :: Int -> Either String Command
+fromInt :: Word8 -> Either String Command
 fromInt x = case x of
   0x01 -> Right PayloadInt
   0x02 -> Right PayloadIntList

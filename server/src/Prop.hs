@@ -12,14 +12,15 @@ import Data.Aeson
   , Options(..)
   , SumEncoding(..)
   )
+import Data.Word (Word8)
 
 data Value
-  = Int Int
-  | IntList [Int]
+  = Int Word8
+  | IntList [Word8]
   | String String
   | Nothing
   deriving (Show, Eq, Generic, ToJSON)
 
 instance FromJSON Value where
   parseJSON = genericParseJSON
-    defaultOptions { sumEncoding = ObjectWithSingleField }
+    defaultOptions { sumEncoding = UntaggedValue }
