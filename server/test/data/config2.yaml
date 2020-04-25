@@ -1,0 +1,28 @@
+props:
+  - name: Card Spot 1
+    address: 0x01
+    default-value: 0
+
+  - name: Card Spot 2
+    address: 0x02
+    default-value: 0
+
+  - name: Card Spot 3
+    address: 0x03
+    default-value: 0
+
+  - name: Door
+    address: 0x60
+    default-value: open
+
+rules:
+  - type: timed-sequence
+    trigger:
+      - Card Spot 1: 3
+        time: 0
+      - Card Spot 2: 2
+        time: 1
+      - Card Spot 3: 1
+        time: 2
+    action:
+      - Door: open

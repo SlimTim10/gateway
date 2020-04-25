@@ -86,13 +86,3 @@ rules:
       - Mini Piano: [1,0,0,0,1,0,0,1,0,0,0,0,0]
     action:
       - East Door: open
-
-  # WIP
-  # - type: timed-sequence
-  #   trigger:
-  #     - Tag Reader 1: 2
-  #       time: 0
-  #     - Tag Reader 2: 3
-  #       time: 1
-  #   action:
-  #     - Door: open
