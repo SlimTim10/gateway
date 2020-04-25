@@ -27,7 +27,7 @@ import qualified Command as Cmd
 import ReliableSerial
   ( recvRawPacket
   )
-import qualified Prop
+import qualified Config.Prop as P
 
 secondsToMicro :: Int -> Int
 secondsToMicro = (* 1000) . (* 1000)
@@ -56,6 +56,6 @@ serialLoop s = do
 
 test :: IO ()
 test = do
-  let pld = Prop.IntList [3, 2, 1]
+  let pld = P.IntList [3, 2, 1]
   let p = Packet { propAddress = 1, commandID = Cmd.PayloadIntList, payload = pld }
   print $ Yaml.encode p

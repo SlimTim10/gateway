@@ -15,15 +15,15 @@ import Data.Word (Word32)
 import qualified Data.Text as T
 import qualified Data.HashMap.Strict as HM
 
-import qualified Prop
-import qualified Rule
+import qualified Config.Prop as P
+import qualified Config.Rule as R
 
 data ConfigProp
   = ConfigProp
   { name :: String
   , description :: Maybe String
   , address :: Word32
-  , defaultValue :: Prop.Value
+  , defaultValue :: P.Value
   }
   deriving (Show, Eq, Generic, ToJSON)
 
@@ -38,7 +38,7 @@ instance FromJSON ConfigProp where
 data NameValue
   = NameValue
   { name :: String
-  , value :: Prop.Value
+  , value :: P.Value
   }
   deriving (Show, Eq, Generic, ToJSON)
 
@@ -51,7 +51,7 @@ instance FromJSON NameValue where
 
 data ConfigRule
   = ConfigRule
-  { ruleType :: Rule.Type
+  { ruleType :: R.Type
   , description :: Maybe String
   , trigger :: [NameValue]
   , action :: [NameValue]

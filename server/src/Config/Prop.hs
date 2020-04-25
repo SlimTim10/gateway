@@ -1,4 +1,4 @@
-module Prop where
+module Config.Prop where
 
 import GHC.Generics (Generic)
 import Data.Yaml

@@ -1,4 +1,4 @@
-module Rule where
+module Config.Rule where
 
 import GHC.Generics (Generic)
 import Data.Yaml
@@ -16,8 +16,5 @@ import Data.Char (toLower)
 data Type = Basic | Sequence
   deriving (Show, Eq, Generic, ToJSON)
 
-opts :: Options
-opts = defaultOptions { constructorTagModifier = map toLower }
-
 instance FromJSON Type where
-  parseJSON = genericParseJSON opts
+  parseJSON = genericParseJSON $ defaultOptions { constructorTagModifier = map toLower }

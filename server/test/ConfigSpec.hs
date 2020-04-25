@@ -6,8 +6,8 @@ import Config
 import Data.Yaml (decodeEither', ParseException)
 import Data.Either (isRight, isLeft)
 
-import qualified Prop
-import qualified Rule
+import qualified Config.Prop as P
+import qualified Config.Rule as R
 
 spec :: Spec
 spec = do
@@ -26,7 +26,7 @@ spec = do
         { name = "Tag Reader"
         , description = Just "RFID tag reader"
         , address = 1
-        , defaultValue = Prop.Int 1
+        , defaultValue = P.Int 1
         }
 
     it "parses prop information in YAML" $ do
@@ -43,7 +43,7 @@ spec = do
         { name = "Door"
         , description = Just "Main door between rooms"
         , address = 2
-        , defaultValue = Prop.String "closed"
+        , defaultValue = P.String "closed"
         }
 
     it "parses prop information in YAML" $ do
@@ -60,7 +60,7 @@ spec = do
         { name = "Mini Piano"
         , description = Just "A small piano"
         , address = 3
-        , defaultValue = Prop.IntList [0,0,0,0,0,0,0,0,0,0,0,0,0]
+        , defaultValue = P.IntList [0,0,0,0,0,0,0,0,0,0,0,0,0]
         }
 
     it "handles optional fields" $ do
@@ -76,7 +76,7 @@ spec = do
         { name = "Tag Reader"
         , description = Nothing
         , address = 1
-        , defaultValue = Prop.Int 1
+        , defaultValue = P.Int 1
         }
 
     it "handles multiple props" $ do
@@ -97,13 +97,13 @@ spec = do
           { name = "Tag Reader"
           , description = Just "RFID tag reader"
           , address = 1
-          , defaultValue = Prop.Int 1
+          , defaultValue = P.Int 1
           }
         , ConfigProp
           { name = "Door"
           , description = Just "Main door between rooms"
           , address = 2
-          , defaultValue = Prop.String "closed"
+          , defaultValue = P.String "closed"
           }
         ]
 
@@ -156,13 +156,13 @@ spec = do
       let (Right rule) = result
       rule `shouldBe`
         ConfigRule
-        { ruleType = Rule.Basic
+        { ruleType = R.Basic
         , description = Just "Tag reader should open door"
         , trigger =
-          [ NameValue { name = "Tag Reader" , value = Prop.Int 3 }
+          [ NameValue { name = "Tag Reader" , value = P.Int 3 }
           ]
         , action =
-          [ NameValue { name = "South Door" , value = Prop.String "open" }
+          [ NameValue { name = "South Door" , value = P.String "open" }
           ]
         }
 
@@ -180,14 +180,14 @@ spec = do
       let (Right rule) = result
       rule `shouldBe`
         ConfigRule
-        { ruleType = Rule.Basic
+        { ruleType = R.Basic
         , description = Just "Tag reader should open door"
         , trigger =
-          [ NameValue { name = "Tag Reader 1", value = Prop.Int 3 }
-          , NameValue { name = "Tag Reader 2", value = Prop.Int 1 }
+          [ NameValue { name = "Tag Reader 1", value = P.Int 3 }
+          , NameValue { name = "Tag Reader 2", value = P.Int 1 }
           ]
         , action =
-          [ NameValue { name = "South Door", value = Prop.String "open" }
+          [ NameValue { name = "South Door", value = P.String "open" }
           ]
         }
 
@@ -205,14 +205,14 @@ spec = do
       let (Right rule) = result
       rule `shouldBe`
         ConfigRule
-        { ruleType = Rule.Basic
+        { ruleType = R.Basic
         , description = Just "Tag reader should open door"
         , trigger =
-          [ NameValue { name = "Tag Reader", value = Prop.Int 3 }
+          [ NameValue { name = "Tag Reader", value = P.Int 3 }
           ]
         , action =
-          [ NameValue { name = "South Door", value = Prop.String "open" }
-          , NameValue { name = "East Door", value = Prop.String "open" }
+          [ NameValue { name = "South Door", value = P.String "open" }
+          , NameValue { name = "East Door", value = P.String "open" }
           ]
         }
 
@@ -231,15 +231,15 @@ spec = do
       let (Right rule) = result
       rule `shouldBe`
         ConfigRule
-        { ruleType = Rule.Basic
+        { ruleType = R.Basic
         , description = Just "Tag reader should open door"
         , trigger =
-          [ NameValue { name = "Tag Reader 1", value = Prop.Int 3 }
-          , NameValue { name = "Tag Reader 2", value = Prop.Int 1 }
+          [ NameValue { name = "Tag Reader 1", value = P.Int 3 }
+          , NameValue { name = "Tag Reader 2", value = P.Int 1 }
           ]
         , action =
-          [ NameValue { name = "South Door", value = Prop.String "open" }
-          , NameValue { name = "East Door", value = Prop.String "open" }
+          [ NameValue { name = "South Door", value = P.String "open" }
+          , NameValue { name = "East Door", value = P.String "open" }
           ]
         }
 
@@ -256,116 +256,116 @@ spec = do
             { name = "Card Spot 1"
             , description = Just "RFID tag reader"
             , address = 1
-            , defaultValue = Prop.Int 0
+            , defaultValue = P.Int 0
             }
           , ConfigProp
             { name = "Card Spot 2"
             , description = Just "RFID tag reader"
             , address = 2
-            , defaultValue = Prop.Int 0
+            , defaultValue = P.Int 0
             }
           , ConfigProp
             { name = "Card Spot 3"
             , description = Just "RFID tag reader"
             , address = 3
-            , defaultValue = Prop.Int 0
+            , defaultValue = P.Int 0
             }
           , ConfigProp
             { name = "South Door"
             , description = Just "Enter the next room"
             , address = 0x10
-            , defaultValue = Prop.String "closed"
+            , defaultValue = P.String "closed"
             }
           , ConfigProp
             { name = "Big Lockbox"
             , description = Just "Holds card 4"
             , address = 0x20
-            , defaultValue = Prop.String "locked"
+            , defaultValue = P.String "locked"
             }
           , ConfigProp
             { name = "Small Lockbox 1"
             , description = Just "Holds card 2"
             , address = 0x30
-            , defaultValue = Prop.String "locked"
+            , defaultValue = P.String "locked"
             }
           , ConfigProp
             { name = "Small Lockbox 2"
             , description = Just "Holds the hint to the piano chord"
             , address = 0x31
-            , defaultValue = Prop.String "locked"
+            , defaultValue = P.String "locked"
             }
           , ConfigProp
             { name = "Button Puzzle"
             , description = Nothing
             , address = 0x40
-            , defaultValue = Prop.Int 0
+            , defaultValue = P.Int 0
             }
           , ConfigProp
             { name = "Mini Piano"
             , description = Nothing
             , address = 0x50
-            , defaultValue = Prop.IntList [0,0,0,0,0,0,0,0,0,0,0,0,0]
+            , defaultValue = P.IntList [0,0,0,0,0,0,0,0,0,0,0,0,0]
             }
           , ConfigProp
             { name = "East Door"
             , description = Just "Exit the escape room"
             , address = 0x60
-            , defaultValue = Prop.String "closed"
+            , defaultValue = P.String "closed"
             }
           ]
         , rules =
           [ ConfigRule
-            { ruleType = Rule.Basic
+            { ruleType = R.Basic
             , description = Just "First puzzle. Open the South door to get to the next room"
             , trigger =
-              [ NameValue { name = "Card Spot 1", value = Prop.Int 3 }
+              [ NameValue { name = "Card Spot 1", value = P.Int 3 }
               ]
             , action =
-              [ NameValue { name = "South Door", value = Prop.String "open" }
+              [ NameValue { name = "South Door", value = P.String "open" }
               ]
             }
           , ConfigRule
-            { ruleType = Rule.Sequence
+            { ruleType = R.Sequence
             , description = Just "Get card 4 from the big lockbox"
             , trigger =
-              [ NameValue { name = "Button Puzzle", value = Prop.Int 1 }
-              , NameValue { name = "Button Puzzle", value = Prop.Int 2 }
-              , NameValue { name = "Button Puzzle", value = Prop.Int 3 }
-              , NameValue { name = "Button Puzzle", value = Prop.Int 4 }
+              [ NameValue { name = "Button Puzzle", value = P.Int 1 }
+              , NameValue { name = "Button Puzzle", value = P.Int 2 }
+              , NameValue { name = "Button Puzzle", value = P.Int 3 }
+              , NameValue { name = "Button Puzzle", value = P.Int 4 }
               ]
             , action =
-              [ NameValue { name = "Big Lockbox", value = Prop.String "unlocked" }
+              [ NameValue { name = "Big Lockbox", value = P.String "unlocked" }
               ]
             }
           , ConfigRule
-            { ruleType = Rule.Basic
+            { ruleType = R.Basic
             , description = Just "Get card 2 from the first small lockbox"
             , trigger =
-              [ NameValue { name = "Card Spot 1", value = Prop.Int 4 }
+              [ NameValue { name = "Card Spot 1", value = P.Int 4 }
               ]
             , action =
-              [ NameValue { name = "Small Lockbox 1", value = Prop.String "unlocked" }
+              [ NameValue { name = "Small Lockbox 1", value = P.String "unlocked" }
               ]
             }
           , ConfigRule
-            { ruleType = Rule.Basic
+            { ruleType = R.Basic
             , description = Just "Get the piano chord from the second small lockbox"
             , trigger =
-              [ NameValue { name = "Card Spot 1", value = Prop.Int 1 }
-              , NameValue { name = "Card Spot 2", value = Prop.Int 2 }
+              [ NameValue { name = "Card Spot 1", value = P.Int 1 }
+              , NameValue { name = "Card Spot 2", value = P.Int 2 }
               ]
             , action =
-              [ NameValue { name = "Small Lockbox 2", value = Prop.String "unlocked" }
+              [ NameValue { name = "Small Lockbox 2", value = P.String "unlocked" }
               ]
             }
           , ConfigRule
-            { ruleType = Rule.Basic
+            { ruleType = R.Basic
             , description = Just "Play the right chord to get out!"
             , trigger =
-              [ NameValue { name = "Mini Piano", value = Prop.IntList [1,0,0,0,1,0,0,1,0,0,0,0,0] }
+              [ NameValue { name = "Mini Piano", value = P.IntList [1,0,0,0,1,0,0,1,0,0,0,0,0] }
               ]
             , action =
-              [ NameValue { name = "East Door", value = Prop.String "open" }
+              [ NameValue { name = "East Door", value = P.String "open" }
               ]
             }
           ]

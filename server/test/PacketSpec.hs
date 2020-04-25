@@ -7,7 +7,7 @@ import Data.Either (isLeft, isRight)
 import qualified Data.ByteString.Char8 as B
 import Data.Char (chr)
 
-import qualified Prop
+import qualified Config.Prop as P
 import qualified Command as Cmd
 
 spec :: Spec
@@ -22,7 +22,7 @@ spec = do
         Packet
         { propAddress = 1
         , commandID = Cmd.PayloadInt
-        , payload = Prop.Int 1
+        , payload = P.Int 1
         }
 
   describe "fromBytes" $ do
@@ -35,7 +35,7 @@ spec = do
         Packet
         { propAddress = 1
         , commandID = Cmd.PayloadInt
-        , payload = Prop.Int 1
+        , payload = P.Int 1
         }
 
     it "parses a packet with an integer list payload from bytes" $ do
@@ -47,7 +47,7 @@ spec = do
         Packet
         { propAddress = 1
         , commandID = Cmd.PayloadIntList
-        , payload = Prop.IntList [1, 2, 3]
+        , payload = P.IntList [1, 2, 3]
         }
 
     it "parses a packet with a string payload from bytes" $ do
@@ -59,7 +59,7 @@ spec = do
         Packet
         { propAddress = 1
         , commandID = Cmd.PayloadString
-        , payload = Prop.String "closed"
+        , payload = P.String "closed"
         }
 
     it "parses a packet with a ping command from bytes" $ do
@@ -71,7 +71,7 @@ spec = do
         Packet
         { propAddress = 1
         , commandID = Cmd.Ping
-        , payload = Prop.Nothing
+        , payload = P.Nothing
         }
 
     it "returns an error message when the packet is too small" $ do

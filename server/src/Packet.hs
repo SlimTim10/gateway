@@ -22,14 +22,14 @@ import Data.Word (Word8, Word32)
 import Lib (readJSON)
 import qualified Command as Cmd
 import Command (Command)
-import qualified Prop
+import qualified Config.Prop as P
 
 type RawPacket = B.ByteString
 
 data Packet = Packet
   { propAddress :: Word32
   , commandID :: Command
-  , payload :: Prop.Value
+  , payload :: P.Value
   }
   deriving (Show, Eq, Generic, ToJSON, FromJSON)
 
@@ -68,7 +68,7 @@ getWord32 bs = fromIntegral $ Bin.runGet Bin.getWord32be (fromStrict bs)
 getWord8 :: B.ByteString -> Word8
 getWord8 bs = fromIntegral $ Bin.runGet Bin.getWord8 (fromStrict bs)
 
-payloadValue :: Command -> B.ByteString -> Either String Prop.Value
+payloadValue :: Command -> B.ByteString -> Either String P.Value
 payloadValue Cmd.PayloadInt bs
   | B.null bs = Left "Couldn't match expected single integer with empty payload"
   | B.length bs > 1 =
@@ -76,16 +76,16 @@ payloadValue Cmd.PayloadInt bs
       $ "Couldn't match expected single Int with payload of "
       ++ show (B.length bs)
       ++ " bytes"
-  | otherwise = Right $ Prop.Int $ getWord8 bs
+  | otherwise = Right $ P.Int $ getWord8 bs
 payloadValue Cmd.PayloadIntList bs
   | B.null bs = Left "Couldn't match expected integer list with empty payload"
-  | otherwise = Right $ Prop.IntList ns
+  | otherwise = Right $ P.IntList ns
   where
     ns = map (fromIntegral . ord) . B.unpack $ bs
 payloadValue Cmd.PayloadString bs
   | B.null bs = Left "Couldn't match expected string with empty payload"
-  | otherwise = Right $ Prop.String $ B.unpack bs
-payloadValue _ _ = Right Prop.Nothing
+  | otherwise = Right $ P.String $ B.unpack bs
+payloadValue _ _ = Right P.Nothing
 
 fromBytes :: RawPacket -> Either String Packet
 fromBytes raw
