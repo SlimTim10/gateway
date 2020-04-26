@@ -5,6 +5,7 @@ module Config
   , ConfigRule(..)
   , ConfigTrigger(..)
   , ConfigAction(..)
+  -- , validate
   ) where
 
 import GHC.Generics (Generic)
@@ -33,3 +34,18 @@ data Config
 
 readConfig :: FilePath -> IO (Either ParseException Config)
 readConfig = decodeFileEither
+
+-- validate :: Config -> Either String Config
+-- validate = undefined
+
+-- uniquePropNames :: Config -> Either String Config
+-- uniquePropNames = undefined
+
+-- uniquePropAddresses :: Config -> Either String Config
+-- uniquePropAddresses = undefined
+
+-- noRedundantTriggers :: Config -> Either String Config
+-- noRedundantTriggers = undefined
+
+-- validPropNamesInTriggers :: Config -> Either String Config
+-- validPropNamesInTriggers = undefined

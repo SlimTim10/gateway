@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: cfd302164b6b0b9adb185c7e52e28a7f2042a185ffc48700e50ec844e3542db6
+-- hash: 9adaacf7f1e7cd3d2edcca0cac636248b7f7f3e5d8b7f185ced083d2f536ad1e
 
 name:           server
 version:        0.1.0.0
@@ -35,6 +35,7 @@ library
       Lib
       Packet
       ReliableSerial
+      Rules
       State
       Types.Prop
       Types.Rule
@@ -96,6 +97,7 @@ test-suite server-test
       LibSpec
       PacketSpec
       ReliableSerialSpec
+      RulesSpec
       StateSpec
       Paths_server
   hs-source-dirs:

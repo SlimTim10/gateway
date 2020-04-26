@@ -37,3 +37,4 @@ data Prop = Prop
   , defaultValue :: Value
   , value :: Value
   }
+  deriving (Show, Eq)
