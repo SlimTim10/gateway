@@ -245,7 +245,6 @@ spec = do
 
   describe "readConfig" $ do
     it "parses an entire config file in YAML" $ do
-      True `shouldBe` True
       result <- readConfig "test/data/config.yaml"
       result `shouldSatisfy` isRight
       let (Right config) = result
