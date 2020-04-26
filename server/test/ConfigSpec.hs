@@ -6,8 +6,8 @@ import Config
 import Data.Yaml (decodeEither', ParseException)
 import Data.Either (isRight, isLeft)
 
-import qualified Config.Prop as Prop
-import qualified Config.Rule as Rule
+import qualified Types.Prop as Prop
+import qualified Types.Rule as Rule
 
 spec :: Spec
 spec = do

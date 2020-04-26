@@ -22,7 +22,7 @@ import Data.Word (Word8, Word32)
 import Lib (readJSON)
 import qualified Command as Cmd
 import Command (Command)
-import qualified Config.Prop as P
+import qualified Types.Prop as P
 
 type RawPacket = B.ByteString
 

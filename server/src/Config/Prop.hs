@@ -9,29 +9,13 @@ import Data.Yaml
   , withObject
   , parseJSON
   )
-import Data.Aeson
-  ( genericParseJSON
-  , defaultOptions
-  , Options(..)
-  , SumEncoding(..)
+
+import Types.Prop
+  ( Name
+  , Description
+  , Address
+  , Value
   )
-import Data.Word (Word8, Word32)
-import Data.Text (Text)
-
-type Name = Text
-type Description = Maybe Text
-type Address = Word32
-
-data Value
-  = Int Word8
-  | IntList [Word8]
-  | String String
-  | Nothing
-  deriving (Show, Eq, Generic, ToJSON)
-
-instance FromJSON Value where
-  parseJSON = genericParseJSON
-    defaultOptions { sumEncoding = UntaggedValue }
 
 data Prop
   = Prop

@@ -9,24 +9,13 @@ import Data.Yaml
   , withObject
   , parseJSON
   )
-import Data.Aeson
-  ( genericParseJSON
-  , defaultOptions
-  , Options(..)
-  )
-import Data.Char (toLower)
-import Data.Text (Text)
 import qualified Data.HashMap.Strict as HM
 
-import qualified Config.Prop as Prop
-
-data Type = Basic | Sequence
-  deriving (Show, Eq, Generic, ToJSON)
-
-type Description = Maybe Text
-
-instance FromJSON Type where
-  parseJSON = genericParseJSON $ defaultOptions { constructorTagModifier = map toLower }
+import Types.Rule
+  ( Type
+  , Description
+  )
+import qualified Types.Prop as Prop
 
 data Rule
   = Rule
