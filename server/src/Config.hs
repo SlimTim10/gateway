@@ -1,10 +1,10 @@
 module Config
   ( Config(..)
   , readConfig
-  , Prop(..)
-  , Rule(..)
-  , Trigger(..)
-  , Action(..)
+  , ConfigProp(..)
+  , ConfigRule(..)
+  , ConfigTrigger(..)
+  , ConfigAction(..)
   ) where
 
 import GHC.Generics (Generic)
@@ -16,18 +16,18 @@ import Data.Yaml
   )
 
 import Config.Prop
-  ( Prop(..)
+  ( ConfigProp(..)
   )
 import Config.Rule
-  ( Rule(..)
-  , Trigger(..)
-  , Action(..)
+  ( ConfigRule(..)
+  , ConfigTrigger(..)
+  , ConfigAction(..)
   )
 
 data Config
   = Config
-  { props :: [Prop]
-  , rules :: [Rule]
+  { props :: [ConfigProp]
+  , rules :: [ConfigRule]
   }
   deriving (Show, Eq, Generic, ToJSON, FromJSON)
 

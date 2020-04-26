@@ -17,8 +17,8 @@ import Types.Prop
   , Value
   )
 
-data Prop
-  = Prop
+data ConfigProp
+  = ConfigProp
   { name :: Name
   , description :: Description
   , address :: Address
@@ -26,11 +26,10 @@ data Prop
   }
   deriving (Show, Eq, Generic, ToJSON)
 
-instance FromJSON Prop where
+instance FromJSON ConfigProp where
   parseJSON = withObject "prop" $ \o -> do
     name <- o .: "name"
     description <- o .:? "description"
     address <- o .: "address"
     defaultValue <- o .: "default-value"
-    return $ Prop name description address defaultValue
-
+    return $ ConfigProp name description address defaultValue

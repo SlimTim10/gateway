@@ -29,3 +29,11 @@ data Value
 instance FromJSON Value where
   parseJSON = genericParseJSON
     defaultOptions { sumEncoding = UntaggedValue }
+
+data Prop = Prop
+  { name :: Name
+  , description :: Description
+  , address :: Address
+  , defaultValue :: Value
+  , value :: Value
+  }

@@ -11,18 +11,18 @@ import qualified Types.Rule as Rule
 
 spec :: Spec
 spec = do
-  describe "FromJSON Prop" $ do
+  describe "FromJSON ConfigProp" $ do
     it "parses prop information in YAML" $ do
       let yaml = "\
 \ name: Tag Reader \n\
 \ description: RFID tag reader \n\
 \ address: 1 \n\
 \ default-value: 1"
-      let result = decodeEither' yaml :: Either ParseException Prop
+      let result = decodeEither' yaml :: Either ParseException ConfigProp
       result `shouldSatisfy` isRight
       let (Right prop) = result
       prop `shouldBe`
-        Prop
+        ConfigProp
         { name = "Tag Reader"
         , description = Just "RFID tag reader"
         , address = 1
@@ -35,11 +35,11 @@ spec = do
 \ description: Main door between rooms \n\
 \ address: 2 \n\
 \ default-value: closed"
-      let result = decodeEither' yaml :: Either ParseException Prop
+      let result = decodeEither' yaml :: Either ParseException ConfigProp
       result `shouldSatisfy` isRight
       let (Right prop) = result
       prop `shouldBe`
-        Prop
+        ConfigProp
         { name = "Door"
         , description = Just "Main door between rooms"
         , address = 2
@@ -52,11 +52,11 @@ spec = do
 \ description: A small piano \n\
 \ address: 3 \n\
 \ default-value: [0,0,0,0,0,0,0,0,0,0,0,0,0]"
-      let result = decodeEither' yaml :: Either ParseException Prop
+      let result = decodeEither' yaml :: Either ParseException ConfigProp
       result `shouldSatisfy` isRight
       let (Right prop) = result
       prop `shouldBe`
-        Prop
+        ConfigProp
         { name = "Mini Piano"
         , description = Just "A small piano"
         , address = 3
@@ -68,11 +68,11 @@ spec = do
 \ name: Tag Reader \n\
 \ address: 1 \n\
 \ default-value: 1"
-      let result = decodeEither' yaml :: Either ParseException Prop
+      let result = decodeEither' yaml :: Either ParseException ConfigProp
       result `shouldSatisfy` isRight
       let (Right prop) = result
       prop `shouldBe`
-        Prop
+        ConfigProp
         { name = "Tag Reader"
         , description = Nothing
         , address = 1
@@ -89,17 +89,17 @@ spec = do
 \   description: Main door between rooms \n\
 \   address: 2 \n\
 \   default-value: closed"
-      let result = decodeEither' yaml :: Either ParseException [Prop]
+      let result = decodeEither' yaml :: Either ParseException [ConfigProp]
       result `shouldSatisfy` isRight
       let (Right props) = result
       props `shouldBe`
-        [ Prop
+        [ ConfigProp
           { name = "Tag Reader"
           , description = Just "RFID tag reader"
           , address = 1
           , defaultValue = Prop.Int 1
           }
-        , Prop
+        , ConfigProp
           { name = "Door"
           , description = Just "Main door between rooms"
           , address = 2
@@ -111,13 +111,13 @@ spec = do
       let yaml1 = "\
 \ Tag Reader: \n\
 \ default-value: 1"
-      let result1 = decodeEither' yaml1 :: Either ParseException Prop
+      let result1 = decodeEither' yaml1 :: Either ParseException ConfigProp
       result1 `shouldSatisfy` isLeft
 
       let yaml2 = "\
 \ Tag Reader: \n\
 \ address: 1"
-      let result2 = decodeEither' yaml2 :: Either ParseException Prop
+      let result2 = decodeEither' yaml2 :: Either ParseException ConfigProp
       result2 `shouldSatisfy` isLeft
 
     it "catches unhandled types" $ do
@@ -125,24 +125,24 @@ spec = do
 \ name: Tag Reader \n\
 \ address: 1 \n\
 \ default-value: 1.23"
-      let result1 = decodeEither' yaml1 :: Either ParseException Prop
+      let result1 = decodeEither' yaml1 :: Either ParseException ConfigProp
       result1 `shouldSatisfy` isLeft
       
       let yaml2 = "\
 \ name: Tag Reader \n\
 \ address: 1 \n\
 \ default-value: [a, b, c]"
-      let result2 = decodeEither' yaml2 :: Either ParseException Prop
+      let result2 = decodeEither' yaml2 :: Either ParseException ConfigProp
       result2 `shouldSatisfy` isLeft
       
       let yaml3 = "\
 \ name: Tag Reader \n\
 \ address: 1 \n\
 \ default-value: [\"test\"]"
-      let result3 = decodeEither' yaml3 :: Either ParseException Prop
+      let result3 = decodeEither' yaml3 :: Either ParseException ConfigProp
       result3 `shouldSatisfy` isLeft
 
-  describe "FromJSON Rule" $ do
+  describe "FromJSON ConfigRule" $ do
     it "parses rule information in YAML" $ do
       let yaml = "\
 \ type: basic \n\
@@ -151,18 +151,18 @@ spec = do
 \   - Tag Reader: 3 \n\
 \ action: \n\
 \   - South Door: open"
-      let result = decodeEither' yaml :: Either ParseException Rule
+      let result = decodeEither' yaml :: Either ParseException ConfigRule
       result `shouldSatisfy` isRight
       let (Right rule) = result
       rule `shouldBe`
-        Rule
+        ConfigRule
         { ruleType = Rule.Basic
         , description = Just "Tag reader should open door"
         , trigger =
-          [ Trigger { name = "Tag Reader" , value = Prop.Int 3 }
+          [ ConfigTrigger { name = "Tag Reader" , value = Prop.Int 3 }
           ]
         , action =
-          [ Action { name = "South Door" , value = Prop.String "open" }
+          [ ConfigAction { name = "South Door" , value = Prop.String "open" }
           ]
         }
 
@@ -175,19 +175,19 @@ spec = do
 \   - Tag Reader 2: 1 \n\
 \ action: \n\
 \   - South Door: open"
-      let result = decodeEither' yaml :: Either ParseException Rule
+      let result = decodeEither' yaml :: Either ParseException ConfigRule
       result `shouldSatisfy` isRight
       let (Right rule) = result
       rule `shouldBe`
-        Rule
+        ConfigRule
         { ruleType = Rule.Basic
         , description = Just "Tag reader should open door"
         , trigger =
-          [ Trigger { name = "Tag Reader 1", value = Prop.Int 3 }
-          , Trigger { name = "Tag Reader 2", value = Prop.Int 1 }
+          [ ConfigTrigger { name = "Tag Reader 1", value = Prop.Int 3 }
+          , ConfigTrigger { name = "Tag Reader 2", value = Prop.Int 1 }
           ]
         , action =
-          [ Action { name = "South Door", value = Prop.String "open" }
+          [ ConfigAction { name = "South Door", value = Prop.String "open" }
           ]
         }
 
@@ -200,19 +200,19 @@ spec = do
 \ action: \n\
 \   - South Door: open \n\
 \   - East Door: open"
-      let result = decodeEither' yaml :: Either ParseException Rule
+      let result = decodeEither' yaml :: Either ParseException ConfigRule
       result `shouldSatisfy` isRight
       let (Right rule) = result
       rule `shouldBe`
-        Rule
+        ConfigRule
         { ruleType = Rule.Basic
         , description = Just "Tag reader should open door"
         , trigger =
-          [ Trigger { name = "Tag Reader", value = Prop.Int 3 }
+          [ ConfigTrigger { name = "Tag Reader", value = Prop.Int 3 }
           ]
         , action =
-          [ Action { name = "South Door", value = Prop.String "open" }
-          , Action { name = "East Door", value = Prop.String "open" }
+          [ ConfigAction { name = "South Door", value = Prop.String "open" }
+          , ConfigAction { name = "East Door", value = Prop.String "open" }
           ]
         }
 
@@ -226,20 +226,20 @@ spec = do
 \ action: \n\
 \   - South Door: open \n\
 \   - East Door: open"
-      let result = decodeEither' yaml :: Either ParseException Rule
+      let result = decodeEither' yaml :: Either ParseException ConfigRule
       result `shouldSatisfy` isRight
       let (Right rule) = result
       rule `shouldBe`
-        Rule
+        ConfigRule
         { ruleType = Rule.Basic
         , description = Just "Tag reader should open door"
         , trigger =
-          [ Trigger { name = "Tag Reader 1", value = Prop.Int 3 }
-          , Trigger { name = "Tag Reader 2", value = Prop.Int 1 }
+          [ ConfigTrigger { name = "Tag Reader 1", value = Prop.Int 3 }
+          , ConfigTrigger { name = "Tag Reader 2", value = Prop.Int 1 }
           ]
         , action =
-          [ Action { name = "South Door", value = Prop.String "open" }
-          , Action { name = "East Door", value = Prop.String "open" }
+          [ ConfigAction { name = "South Door", value = Prop.String "open" }
+          , ConfigAction { name = "East Door", value = Prop.String "open" }
           ]
         }
 
@@ -251,61 +251,61 @@ spec = do
       config `shouldBe`
         Config
         { props =
-          [ Prop
+          [ ConfigProp
             { name = "Card Spot 1"
             , description = Just "RFID tag reader"
             , address = 1
             , defaultValue = Prop.Int 0
             }
-          , Prop
+          , ConfigProp
             { name = "Card Spot 2"
             , description = Just "RFID tag reader"
             , address = 2
             , defaultValue = Prop.Int 0
             }
-          , Prop
+          , ConfigProp
             { name = "Card Spot 3"
             , description = Just "RFID tag reader"
             , address = 3
             , defaultValue = Prop.Int 0
             }
-          , Prop
+          , ConfigProp
             { name = "South Door"
             , description = Just "Enter the next room"
             , address = 0x10
             , defaultValue = Prop.String "closed"
             }
-          , Prop
+          , ConfigProp
             { name = "Big Lockbox"
             , description = Just "Holds card 4"
             , address = 0x20
             , defaultValue = Prop.String "locked"
             }
-          , Prop
+          , ConfigProp
             { name = "Small Lockbox 1"
             , description = Just "Holds card 2"
             , address = 0x30
             , defaultValue = Prop.String "locked"
             }
-          , Prop
+          , ConfigProp
             { name = "Small Lockbox 2"
             , description = Just "Holds the hint to the piano chord"
             , address = 0x31
             , defaultValue = Prop.String "locked"
             }
-          , Prop
+          , ConfigProp
             { name = "Button Puzzle"
             , description = Nothing
             , address = 0x40
             , defaultValue = Prop.Int 0
             }
-          , Prop
+          , ConfigProp
             { name = "Mini Piano"
             , description = Nothing
             , address = 0x50
             , defaultValue = Prop.IntList [0,0,0,0,0,0,0,0,0,0,0,0,0]
             }
-          , Prop
+          , ConfigProp
             { name = "East Door"
             , description = Just "Exit the escape room"
             , address = 0x60
@@ -313,58 +313,58 @@ spec = do
             }
           ]
         , rules =
-          [ Rule
+          [ ConfigRule
             { ruleType = Rule.Basic
             , description = Just "First puzzle. Open the South door to get to the next room"
             , trigger =
-              [ Trigger { name = "Card Spot 1", value = Prop.Int 3 }
+              [ ConfigTrigger { name = "Card Spot 1", value = Prop.Int 3 }
               ]
             , action =
-              [ Action { name = "South Door", value = Prop.String "open" }
+              [ ConfigAction { name = "South Door", value = Prop.String "open" }
               ]
             }
-          , Rule
+          , ConfigRule
             { ruleType = Rule.Sequence
             , description = Just "Get card 4 from the big lockbox"
             , trigger =
-              [ Trigger { name = "Button Puzzle", value = Prop.Int 1 }
-              , Trigger { name = "Button Puzzle", value = Prop.Int 2 }
-              , Trigger { name = "Button Puzzle", value = Prop.Int 3 }
-              , Trigger { name = "Button Puzzle", value = Prop.Int 4 }
+              [ ConfigTrigger { name = "Button Puzzle", value = Prop.Int 1 }
+              , ConfigTrigger { name = "Button Puzzle", value = Prop.Int 2 }
+              , ConfigTrigger { name = "Button Puzzle", value = Prop.Int 3 }
+              , ConfigTrigger { name = "Button Puzzle", value = Prop.Int 4 }
               ]
             , action =
-              [ Action { name = "Big Lockbox", value = Prop.String "unlocked" }
+              [ ConfigAction { name = "Big Lockbox", value = Prop.String "unlocked" }
               ]
             }
-          , Rule
+          , ConfigRule
             { ruleType = Rule.Basic
             , description = Just "Get card 2 from the first small lockbox"
             , trigger =
-              [ Trigger { name = "Card Spot 1", value = Prop.Int 4 }
+              [ ConfigTrigger { name = "Card Spot 1", value = Prop.Int 4 }
               ]
             , action =
-              [ Action { name = "Small Lockbox 1", value = Prop.String "unlocked" }
+              [ ConfigAction { name = "Small Lockbox 1", value = Prop.String "unlocked" }
               ]
             }
-          , Rule
+          , ConfigRule
             { ruleType = Rule.Basic
             , description = Just "Get the piano chord from the second small lockbox"
             , trigger =
-              [ Trigger { name = "Card Spot 1", value = Prop.Int 1 }
-              , Trigger { name = "Card Spot 2", value = Prop.Int 2 }
+              [ ConfigTrigger { name = "Card Spot 1", value = Prop.Int 1 }
+              , ConfigTrigger { name = "Card Spot 2", value = Prop.Int 2 }
               ]
             , action =
-              [ Action { name = "Small Lockbox 2", value = Prop.String "unlocked" }
+              [ ConfigAction { name = "Small Lockbox 2", value = Prop.String "unlocked" }
               ]
             }
-          , Rule
+          , ConfigRule
             { ruleType = Rule.Basic
             , description = Just "Play the right chord to get out!"
             , trigger =
-              [ Trigger { name = "Mini Piano", value = Prop.IntList [1,0,0,0,1,0,0,1,0,0,0,0,0] }
+              [ ConfigTrigger { name = "Mini Piano", value = Prop.IntList [1,0,0,0,1,0,0,1,0,0,0,0,0] }
               ]
             , action =
-              [ Action { name = "East Door", value = Prop.String "open" }
+              [ ConfigAction { name = "East Door", value = Prop.String "open" }
               ]
             }
           ]
