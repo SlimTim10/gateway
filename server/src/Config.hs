@@ -3,7 +3,8 @@ module Config
   , readConfig
   , Prop(..)
   , Rule(..)
-  , NameValue(..)
+  , Trigger(..)
+  , Action(..)
   ) where
 
 import GHC.Generics (Generic)
@@ -14,9 +15,14 @@ import Data.Yaml
   , ParseException
   )
 
-import Config.Prop (Prop(..))
-import Config.Rule (Rule(..))
-import Config.NameValue (NameValue(..))
+import Config.Prop
+  ( Prop(..)
+  )
+import Config.Rule
+  ( Rule(..)
+  , Trigger(..)
+  , Action(..)
+  )
 
 data Config
   = Config

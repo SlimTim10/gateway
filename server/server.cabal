@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: abff082399a4898c3711d2a4b5aa0ceed8b67580e4201d0e20483f8c625db21e
+-- hash: 195ca2fa161e098f37c93107fc8b1854ca9156b2d2c51b9e7fd0a415767a8f73
 
 name:           server
 version:        0.1.0.0
@@ -28,7 +28,6 @@ library
   exposed-modules:
       Command
       Config
-      Config.NameValue
       Config.Prop
       Config.Rule
       Encoding

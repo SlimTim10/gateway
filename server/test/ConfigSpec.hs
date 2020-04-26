@@ -159,10 +159,10 @@ spec = do
         { ruleType = Rule.Basic
         , description = Just "Tag reader should open door"
         , trigger =
-          [ NameValue { name = "Tag Reader" , value = Prop.Int 3 }
+          [ Trigger { name = "Tag Reader" , value = Prop.Int 3 }
           ]
         , action =
-          [ NameValue { name = "South Door" , value = Prop.String "open" }
+          [ Action { name = "South Door" , value = Prop.String "open" }
           ]
         }
 
@@ -183,11 +183,11 @@ spec = do
         { ruleType = Rule.Basic
         , description = Just "Tag reader should open door"
         , trigger =
-          [ NameValue { name = "Tag Reader 1", value = Prop.Int 3 }
-          , NameValue { name = "Tag Reader 2", value = Prop.Int 1 }
+          [ Trigger { name = "Tag Reader 1", value = Prop.Int 3 }
+          , Trigger { name = "Tag Reader 2", value = Prop.Int 1 }
           ]
         , action =
-          [ NameValue { name = "South Door", value = Prop.String "open" }
+          [ Action { name = "South Door", value = Prop.String "open" }
           ]
         }
 
@@ -208,11 +208,11 @@ spec = do
         { ruleType = Rule.Basic
         , description = Just "Tag reader should open door"
         , trigger =
-          [ NameValue { name = "Tag Reader", value = Prop.Int 3 }
+          [ Trigger { name = "Tag Reader", value = Prop.Int 3 }
           ]
         , action =
-          [ NameValue { name = "South Door", value = Prop.String "open" }
-          , NameValue { name = "East Door", value = Prop.String "open" }
+          [ Action { name = "South Door", value = Prop.String "open" }
+          , Action { name = "East Door", value = Prop.String "open" }
           ]
         }
 
@@ -234,12 +234,12 @@ spec = do
         { ruleType = Rule.Basic
         , description = Just "Tag reader should open door"
         , trigger =
-          [ NameValue { name = "Tag Reader 1", value = Prop.Int 3 }
-          , NameValue { name = "Tag Reader 2", value = Prop.Int 1 }
+          [ Trigger { name = "Tag Reader 1", value = Prop.Int 3 }
+          , Trigger { name = "Tag Reader 2", value = Prop.Int 1 }
           ]
         , action =
-          [ NameValue { name = "South Door", value = Prop.String "open" }
-          , NameValue { name = "East Door", value = Prop.String "open" }
+          [ Action { name = "South Door", value = Prop.String "open" }
+          , Action { name = "East Door", value = Prop.String "open" }
           ]
         }
 
@@ -318,54 +318,54 @@ spec = do
             { ruleType = Rule.Basic
             , description = Just "First puzzle. Open the South door to get to the next room"
             , trigger =
-              [ NameValue { name = "Card Spot 1", value = Prop.Int 3 }
+              [ Trigger { name = "Card Spot 1", value = Prop.Int 3 }
               ]
             , action =
-              [ NameValue { name = "South Door", value = Prop.String "open" }
+              [ Action { name = "South Door", value = Prop.String "open" }
               ]
             }
           , Rule
             { ruleType = Rule.Sequence
             , description = Just "Get card 4 from the big lockbox"
             , trigger =
-              [ NameValue { name = "Button Puzzle", value = Prop.Int 1 }
-              , NameValue { name = "Button Puzzle", value = Prop.Int 2 }
-              , NameValue { name = "Button Puzzle", value = Prop.Int 3 }
-              , NameValue { name = "Button Puzzle", value = Prop.Int 4 }
+              [ Trigger { name = "Button Puzzle", value = Prop.Int 1 }
+              , Trigger { name = "Button Puzzle", value = Prop.Int 2 }
+              , Trigger { name = "Button Puzzle", value = Prop.Int 3 }
+              , Trigger { name = "Button Puzzle", value = Prop.Int 4 }
               ]
             , action =
-              [ NameValue { name = "Big Lockbox", value = Prop.String "unlocked" }
+              [ Action { name = "Big Lockbox", value = Prop.String "unlocked" }
               ]
             }
           , Rule
             { ruleType = Rule.Basic
             , description = Just "Get card 2 from the first small lockbox"
             , trigger =
-              [ NameValue { name = "Card Spot 1", value = Prop.Int 4 }
+              [ Trigger { name = "Card Spot 1", value = Prop.Int 4 }
               ]
             , action =
-              [ NameValue { name = "Small Lockbox 1", value = Prop.String "unlocked" }
+              [ Action { name = "Small Lockbox 1", value = Prop.String "unlocked" }
               ]
             }
           , Rule
             { ruleType = Rule.Basic
             , description = Just "Get the piano chord from the second small lockbox"
             , trigger =
-              [ NameValue { name = "Card Spot 1", value = Prop.Int 1 }
-              , NameValue { name = "Card Spot 2", value = Prop.Int 2 }
+              [ Trigger { name = "Card Spot 1", value = Prop.Int 1 }
+              , Trigger { name = "Card Spot 2", value = Prop.Int 2 }
               ]
             , action =
-              [ NameValue { name = "Small Lockbox 2", value = Prop.String "unlocked" }
+              [ Action { name = "Small Lockbox 2", value = Prop.String "unlocked" }
               ]
             }
           , Rule
             { ruleType = Rule.Basic
             , description = Just "Play the right chord to get out!"
             , trigger =
-              [ NameValue { name = "Mini Piano", value = Prop.IntList [1,0,0,0,1,0,0,1,0,0,0,0,0] }
+              [ Trigger { name = "Mini Piano", value = Prop.IntList [1,0,0,0,1,0,0,1,0,0,0,0,0] }
               ]
             , action =
-              [ NameValue { name = "East Door", value = Prop.String "open" }
+              [ Action { name = "East Door", value = Prop.String "open" }
               ]
             }
           ]

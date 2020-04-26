@@ -18,6 +18,10 @@ import Data.Aeson
 import Data.Word (Word8, Word32)
 import Data.Text (Text)
 
+type Name = Text
+type Description = Maybe Text
+type Address = Word32
+
 data Value
   = Int Word8
   | IntList [Word8]
@@ -31,9 +35,9 @@ instance FromJSON Value where
 
 data Prop
   = Prop
-  { name :: Text
-  , description :: Maybe Text
-  , address :: Word32
+  { name :: Name
+  , description :: Description
+  , address :: Address
   , defaultValue :: Value
   }
   deriving (Show, Eq, Generic, ToJSON)
