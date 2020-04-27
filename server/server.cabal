@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9adaacf7f1e7cd3d2edcca0cac636248b7f7f3e5d8b7f185ced083d2f536ad1e
+-- hash: e4db62120e49e72d744e81a9d03b958e8022c3d2a27a80a869f9e9604b4faa07
 
 name:           server
 version:        0.1.0.0
@@ -31,7 +31,6 @@ library
       Config.Prop
       Config.Rule
       Encoding
-      GameState
       Lib
       Packet
       ReliableSerial

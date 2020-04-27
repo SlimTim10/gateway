@@ -33,7 +33,7 @@ fromConfigRule state cRule = do
   let ca = (action :: ConfigRule -> [ConfigAction]) cRule
   trg <- mapM (fromConfigTrigger state) ct
   act <- mapM (fromConfigAction state) ca
-  return $ Rule
+  Right Rule
     { type_ = (type_ :: ConfigRule -> Rule.Type) cRule
     , description = (description :: ConfigRule -> Rule.Description) cRule
     , trigger = trg
@@ -44,8 +44,8 @@ fromConfigTrigger :: State -> ConfigTrigger -> Either String Trigger
 fromConfigTrigger state cTrigger = do
   let f = \(_, prop) -> Prop.name prop == (name :: ConfigTrigger -> Prop.Name) cTrigger
   case find f (IntMap.assocs state) of
-    Nothing -> error $ "Invalid trigger: " ++ show cTrigger
-    Just (key, _) -> return
+    Nothing -> Left $ "Invalid trigger: " ++ show cTrigger
+    Just (key, _) -> Right
       Trigger
       { propKey = key
       , value = (value :: ConfigTrigger -> Prop.Value) cTrigger
@@ -55,8 +55,8 @@ fromConfigAction :: State -> ConfigAction -> Either String Action
 fromConfigAction state cAction = do
   let f = \(_, prop) -> Prop.name prop == (name :: ConfigAction -> Prop.Name) cAction
   case find f (IntMap.assocs state) of
-    Nothing -> error $ "Invalid action: " ++ show cAction
-    Just (key, _) -> return
+    Nothing -> Left $ "Invalid action: " ++ show cAction
+    Just (key, _) -> Right
       Action
       { propKey = key
       , value = (value :: ConfigAction -> Prop.Value) cAction
