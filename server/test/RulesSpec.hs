@@ -3,12 +3,18 @@ module RulesSpec (spec) where
 import Test.Hspec
 import Rules
 
+import qualified Data.IntMap.Strict as IntMap
 import Data.Either (isRight)
 
+import Types.Prop
+  ( Prop(..)
+  )
 import qualified Types.Prop as Prop
--- import Types.Rule
---   ( Rule(..)
---   )
+import Types.Rule
+  ( Rule(..)
+  , Trigger(..)
+  , Action(..)
+  )
 import qualified Types.Rule as Rule
 import Config
   ( ConfigRule(..)
@@ -19,12 +25,104 @@ import Config
 spec :: Spec
 spec = do
   describe "FromConfig" $ do
-    it "builds state out of a configuration" $ do
+    it "builds rules out of a configuration" $ do
       let
-        state = undefined
+        state =
+          IntMap.fromAscList
+          [ ( 1
+            , Prop
+              { name = "Card Spot 1"
+              , description = Just "RFID tag reader"
+              , address = 1
+              , defaultValue = Prop.Int 0
+              , value = Prop.Int 0
+              }
+            )
+          , ( 2
+            , Prop
+              { name = "Card Spot 2"
+              , description = Just "RFID tag reader"
+              , address = 2
+              , defaultValue = Prop.Int 0
+              , value = Prop.Int 0
+              }
+            )
+          , ( 3
+            , Prop
+              { name = "Card Spot 3"
+              , description = Just "RFID tag reader"
+              , address = 3
+              , defaultValue = Prop.Int 0
+              , value = Prop.Int 0
+              }
+            )
+          , ( 4
+            , Prop
+              { name = "South Door"
+              , description = Just "Enter the next room"
+              , address = 0x10
+              , defaultValue = Prop.String "closed"
+              , value = Prop.String "closed"
+              }
+            )
+          , ( 5
+            , Prop
+              { name = "Big Lockbox"
+              , description = Just "Holds card 4"
+              , address = 0x20
+              , defaultValue = Prop.String "locked"
+              , value = Prop.String "locked"
+              }
+            )
+          , ( 6
+            , Prop
+              { name = "Small Lockbox 1"
+              , description = Just "Holds card 2"
+              , address = 0x30
+              , defaultValue = Prop.String "locked"
+              , value = Prop.String "locked"
+              }
+            )
+          , ( 7
+            , Prop
+              { name = "Small Lockbox 2"
+              , description = Just "Holds the hint to the piano chord"
+              , address = 0x31
+              , defaultValue = Prop.String "locked"
+              , value = Prop.String "locked"
+              }
+            )
+          , ( 8
+            , Prop
+              { name = "Button Puzzle"
+              , description = Nothing
+              , address = 0x40
+              , defaultValue = Prop.Int 0
+              , value = Prop.Int 0
+              }
+            )
+          , ( 9
+            , Prop
+              { name = "Mini Piano"
+              , description = Nothing
+              , address = 0x50
+              , defaultValue = Prop.IntList [0,0,0,0,0,0,0,0,0,0,0,0,0]
+              , value = Prop.IntList [0,0,0,0,0,0,0,0,0,0,0,0,0]
+              }
+            )
+          , ( 10
+            , Prop
+              { name = "East Door"
+              , description = Just "Exit the escape room"
+              , address = 0x60
+              , defaultValue = Prop.String "closed"
+              , value = Prop.String "closed"
+              }
+            )
+          ]
         crules =
           [ ConfigRule
-            { ruleType = Rule.Basic
+            { type_ = Rule.Basic
             , description = Just "First puzzle. Open the South door to get to the next room"
             , trigger =
               [ ConfigTrigger { name = "Card Spot 1", value = Prop.Int 3 }
@@ -34,7 +132,7 @@ spec = do
               ]
             }
           , ConfigRule
-            { ruleType = Rule.Sequence
+            { type_ = Rule.Sequence
             , description = Just "Get card 4 from the big lockbox"
             , trigger =
               [ ConfigTrigger { name = "Button Puzzle", value = Prop.Int 1 }
@@ -47,7 +145,7 @@ spec = do
               ]
             }
           , ConfigRule
-            { ruleType = Rule.Basic
+            { type_ = Rule.Basic
             , description = Just "Get card 2 from the first small lockbox"
             , trigger =
               [ ConfigTrigger { name = "Card Spot 1", value = Prop.Int 4 }
@@ -57,7 +155,7 @@ spec = do
               ]
             }
           , ConfigRule
-            { ruleType = Rule.Basic
+            { type_ = Rule.Basic
             , description = Just "Get the piano chord from the second small lockbox"
             , trigger =
               [ ConfigTrigger { name = "Card Spot 1", value = Prop.Int 1 }
@@ -68,7 +166,7 @@ spec = do
               ]
             }
           , ConfigRule
-            { ruleType = Rule.Basic
+            { type_ = Rule.Basic
             , description = Just "Play the right chord to get out!"
             , trigger =
               [ ConfigTrigger { name = "Mini Piano", value = Prop.IntList [1,0,0,0,1,0,0,1,0,0,0,0,0] }
@@ -80,5 +178,60 @@ spec = do
           ]
       let result = fromConfig state crules
       result `shouldSatisfy` isRight
-      -- let (Right rules) = result
-      -- rules `shouldBe`
+      let (Right rules) = result
+      rules `shouldBe`
+        [ Rule
+          { type_ = Rule.Basic
+          , description = Just "First puzzle. Open the South door to get to the next room"
+          , trigger =
+            [ Trigger { propKey = 1, value = Prop.Int 3 }
+            ]
+          , action =
+            [ Action { propKey = 4, value = Prop.String "open" }
+            ]
+          }
+        , Rule
+          { type_ = Rule.Sequence
+          , description = Just "Get card 4 from the big lockbox"
+          , trigger =
+            [ Trigger { propKey = 8, value = Prop.Int 1 }
+            , Trigger { propKey = 8, value = Prop.Int 2 }
+            , Trigger { propKey = 8, value = Prop.Int 3 }
+            , Trigger { propKey = 8, value = Prop.Int 4 }
+            ]
+          , action =
+            [ Action { propKey = 5, value = Prop.String "unlocked" }
+            ]
+          }
+        , Rule
+          { type_ = Rule.Basic
+          , description = Just "Get card 2 from the first small lockbox"
+          , trigger =
+            [ Trigger { propKey = 1, value = Prop.Int 4 }
+            ]
+          , action =
+            [ Action { propKey = 6, value = Prop.String "unlocked" }
+            ]
+          }
+        , Rule
+          { type_ = Rule.Basic
+          , description = Just "Get the piano chord from the second small lockbox"
+          , trigger =
+            [ Trigger { propKey = 1, value = Prop.Int 1 }
+            , Trigger { propKey = 2, value = Prop.Int 2 }
+            ]
+          , action =
+            [ Action { propKey = 7, value = Prop.String "unlocked" }
+            ]
+          }
+        , Rule
+          { type_ = Rule.Basic
+          , description = Just "Play the right chord to get out!"
+          , trigger =
+            [ Trigger { propKey = 9, value = Prop.IntList [1,0,0,0,1,0,0,1,0,0,0,0,0] }
+            ]
+          , action =
+            [ Action { propKey = 10, value = Prop.String "open" }
+            ]
+          }
+        ]

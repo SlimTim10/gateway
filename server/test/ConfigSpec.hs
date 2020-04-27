@@ -156,7 +156,7 @@ spec = do
       let (Right rule) = result
       rule `shouldBe`
         ConfigRule
-        { ruleType = Rule.Basic
+        { type_ = Rule.Basic
         , description = Just "Tag reader should open door"
         , trigger =
           [ ConfigTrigger { name = "Tag Reader" , value = Prop.Int 3 }
@@ -180,7 +180,7 @@ spec = do
       let (Right rule) = result
       rule `shouldBe`
         ConfigRule
-        { ruleType = Rule.Basic
+        { type_ = Rule.Basic
         , description = Just "Tag reader should open door"
         , trigger =
           [ ConfigTrigger { name = "Tag Reader 1", value = Prop.Int 3 }
@@ -205,7 +205,7 @@ spec = do
       let (Right rule) = result
       rule `shouldBe`
         ConfigRule
-        { ruleType = Rule.Basic
+        { type_ = Rule.Basic
         , description = Just "Tag reader should open door"
         , trigger =
           [ ConfigTrigger { name = "Tag Reader", value = Prop.Int 3 }
@@ -231,7 +231,7 @@ spec = do
       let (Right rule) = result
       rule `shouldBe`
         ConfigRule
-        { ruleType = Rule.Basic
+        { type_ = Rule.Basic
         , description = Just "Tag reader should open door"
         , trigger =
           [ ConfigTrigger { name = "Tag Reader 1", value = Prop.Int 3 }
@@ -314,7 +314,7 @@ spec = do
           ]
         , rules =
           [ ConfigRule
-            { ruleType = Rule.Basic
+            { type_ = Rule.Basic
             , description = Just "First puzzle. Open the South door to get to the next room"
             , trigger =
               [ ConfigTrigger { name = "Card Spot 1", value = Prop.Int 3 }
@@ -324,7 +324,7 @@ spec = do
               ]
             }
           , ConfigRule
-            { ruleType = Rule.Sequence
+            { type_ = Rule.Sequence
             , description = Just "Get card 4 from the big lockbox"
             , trigger =
               [ ConfigTrigger { name = "Button Puzzle", value = Prop.Int 1 }
@@ -337,7 +337,7 @@ spec = do
               ]
             }
           , ConfigRule
-            { ruleType = Rule.Basic
+            { type_ = Rule.Basic
             , description = Just "Get card 2 from the first small lockbox"
             , trigger =
               [ ConfigTrigger { name = "Card Spot 1", value = Prop.Int 4 }
@@ -347,7 +347,7 @@ spec = do
               ]
             }
           , ConfigRule
-            { ruleType = Rule.Basic
+            { type_ = Rule.Basic
             , description = Just "Get the piano chord from the second small lockbox"
             , trigger =
               [ ConfigTrigger { name = "Card Spot 1", value = Prop.Int 1 }
@@ -358,7 +358,7 @@ spec = do
               ]
             }
           , ConfigRule
-            { ruleType = Rule.Basic
+            { type_ = Rule.Basic
             , description = Just "Play the right chord to get out!"
             , trigger =
               [ ConfigTrigger { name = "Mini Piano", value = Prop.IntList [1,0,0,0,1,0,0,1,0,0,0,0,0] }

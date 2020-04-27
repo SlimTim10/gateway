@@ -37,7 +37,9 @@ data Action = Action
   deriving (Show, Eq)
 
 data Rule = Rule
-  { trigger :: [Trigger]
+  { type_ :: Type
+  , description :: Description
+  , trigger :: [Trigger]
   , action :: [Action]
   }
   deriving (Show, Eq)

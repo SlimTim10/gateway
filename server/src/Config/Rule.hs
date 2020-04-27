@@ -45,7 +45,7 @@ instance FromJSON ConfigAction where
 
 data ConfigRule
   = ConfigRule
-  { ruleType :: Type
+  { type_ :: Type
   , description :: Description
   , trigger :: [ConfigTrigger]
   , action :: [ConfigAction]
@@ -54,9 +54,9 @@ data ConfigRule
 
 instance FromJSON ConfigRule where
   parseJSON = withObject "rule" $ \o -> do
-    ruleType <- o .: "type"
+    type_ <- o .: "type"
     description <- o .:? "description"
     trigger <- o .: "trigger"
     action <- o .: "action"
-    return $ ConfigRule ruleType description trigger action
+    return $ ConfigRule type_ description trigger action
 
