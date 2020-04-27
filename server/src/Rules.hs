@@ -33,7 +33,8 @@ fromConfigRule state cRule = do
   let ca = (action :: ConfigRule -> [ConfigAction]) cRule
   trg <- mapM (fromConfigTrigger state) ct
   act <- mapM (fromConfigAction state) ca
-  Right Rule
+  Right
+    Rule
     { type_ = (type_ :: ConfigRule -> Rule.Type) cRule
     , description = (description :: ConfigRule -> Rule.Description) cRule
     , trigger = trg
