@@ -1,1 +1,1 @@
-ghcid -c="stack ghci test/Spec.hs" --test=main
+ghcid -c="stack ghci test/Spec.hs" --test=main --color=never
