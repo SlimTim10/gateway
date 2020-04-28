@@ -11,15 +11,19 @@ import State
   )
 import Types.Rule
   ( Rule(..)
-  , Trigger(..)
-  , Action(..)
+  , TriggerElement(..)
+  , Trigger
+  , ActionElement(..)
+  , Action
   )
 import qualified Types.Rule as Rule
 import qualified Types.Prop as Prop
 import Config
   ( ConfigRule(..)
-  , ConfigTrigger(..)
-  , ConfigAction(..)
+  , ConfigTriggerElement(..)
+  , ConfigTrigger
+  , ConfigActionElement(..)
+  , ConfigAction
   )
 
 type Rules = [Rule]
@@ -29,36 +33,51 @@ fromConfig state config = mapM (fromConfigRule state) config
 
 fromConfigRule :: State -> ConfigRule -> Either String Rule
 fromConfigRule state cRule = do
-  let ct = (trigger :: ConfigRule -> [ConfigTrigger]) cRule
-  let ca = (action :: ConfigRule -> [ConfigAction]) cRule
-  trg <- mapM (fromConfigTrigger state) ct
-  act <- mapM (fromConfigAction state) ca
+  trg <- fromConfigTrigger state (trigger cRule)
+  act <- fromConfigAction state (action cRule)
   Right
     Rule
-    { type_ = (type_ :: ConfigRule -> Rule.Type) cRule
-    , description = (description :: ConfigRule -> Rule.Description) cRule
+    { type_ = type_ cRule
+    , description = description cRule
     , trigger = trg
     , action = act
     }
+  where
+    trigger = trigger :: ConfigRule -> ConfigTrigger
+    action = action :: ConfigRule -> ConfigAction
+    type_ = type_ :: ConfigRule -> Rule.Type
+    description = description :: ConfigRule -> Rule.Description
 
 fromConfigTrigger :: State -> ConfigTrigger -> Either String Trigger
-fromConfigTrigger state cTrigger = do
-  let f = \(_, prop) -> Prop.name prop == (name :: ConfigTrigger -> Prop.Name) cTrigger
+fromConfigTrigger state = mapM (fromConfigTriggerElement state)
+
+fromConfigTriggerElement :: State -> ConfigTriggerElement -> Either String TriggerElement
+fromConfigTriggerElement state cTrigger = do
+  let f = \(_, prop) -> Prop.name prop == name cTrigger
   case find f (IntMap.assocs state) of
     Nothing -> Left $ "Invalid trigger: " ++ show cTrigger
     Just (key, _) -> Right
-      Trigger
+      TriggerElement
       { propKey = key
-      , value = (value :: ConfigTrigger -> Prop.Value) cTrigger
+      , value = value cTrigger
       }
+  where
+    name = name :: ConfigTriggerElement -> Prop.Name
+    value = value :: ConfigTriggerElement -> Prop.Value
 
 fromConfigAction :: State -> ConfigAction -> Either String Action
-fromConfigAction state cAction = do
-  let f = \(_, prop) -> Prop.name prop == (name :: ConfigAction -> Prop.Name) cAction
+fromConfigAction state = mapM (fromConfigActionElement state)
+
+fromConfigActionElement :: State -> ConfigActionElement -> Either String ActionElement
+fromConfigActionElement state cAction = do
+  let f = \(_, prop) -> Prop.name prop == name cAction
   case find f (IntMap.assocs state) of
     Nothing -> Left $ "Invalid action: " ++ show cAction
     Just (key, _) -> Right
-      Action
+      ActionElement
       { propKey = key
-      , value = (value :: ConfigAction -> Prop.Value) cAction
+      , value = value cAction
       }
+  where
+    name = name :: ConfigActionElement -> Prop.Name
+    value = value :: ConfigActionElement -> Prop.Value

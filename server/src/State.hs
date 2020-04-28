@@ -17,8 +17,10 @@ import Config
   ( ConfigProp(..)
   )
 import Types.Rule
-  ( Trigger(..)
-  , Action(..)
+  ( TriggerElement(..)
+  , Trigger
+  , ActionElement(..)
+  , Action
   )
 
 type State = IntMap Prop
@@ -38,19 +40,25 @@ fromConfigProp cProp = Prop
   , value = (defaultValue :: ConfigProp -> Prop.Value) cProp
   }
 
-checkTrigger :: Trigger -> State -> Bool
-checkTrigger
-  ( Trigger { propKey = key, value = tv } )
+checkTrigger :: State -> Trigger -> Bool
+checkTrigger = undefined
+
+checkTriggerElement :: State -> TriggerElement -> Bool
+checkTriggerElement
   state
+  ( TriggerElement { propKey = key, value = tv } )
   =
   case state !? key of
     Nothing -> False
     Just prop -> Prop.value prop == tv
 
-applyAction :: Action -> State -> State
-applyAction
-  ( Action { propKey = key, value = av } )
+applyAction :: State -> Action -> State
+applyAction = undefined
+
+applyActionElement :: State -> ActionElement -> State
+applyActionElement
   state
+  ( ActionElement { propKey = key, value = av } )
   =
   IntMap.update f key state
   where

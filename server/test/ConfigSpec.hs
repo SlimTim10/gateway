@@ -159,10 +159,10 @@ spec = do
         { type_ = Rule.Basic
         , description = Just "Tag reader should open door"
         , trigger =
-          [ ConfigTrigger { name = "Tag Reader" , value = Prop.Int 3 }
+          [ ConfigTriggerElement { name = "Tag Reader" , value = Prop.Int 3 }
           ]
         , action =
-          [ ConfigAction { name = "South Door" , value = Prop.String "open" }
+          [ ConfigActionElement { name = "South Door" , value = Prop.String "open" }
           ]
         }
 
@@ -183,11 +183,11 @@ spec = do
         { type_ = Rule.Basic
         , description = Just "Tag reader should open door"
         , trigger =
-          [ ConfigTrigger { name = "Tag Reader 1", value = Prop.Int 3 }
-          , ConfigTrigger { name = "Tag Reader 2", value = Prop.Int 1 }
+          [ ConfigTriggerElement { name = "Tag Reader 1", value = Prop.Int 3 }
+          , ConfigTriggerElement { name = "Tag Reader 2", value = Prop.Int 1 }
           ]
         , action =
-          [ ConfigAction { name = "South Door", value = Prop.String "open" }
+          [ ConfigActionElement { name = "South Door", value = Prop.String "open" }
           ]
         }
 
@@ -208,11 +208,11 @@ spec = do
         { type_ = Rule.Basic
         , description = Just "Tag reader should open door"
         , trigger =
-          [ ConfigTrigger { name = "Tag Reader", value = Prop.Int 3 }
+          [ ConfigTriggerElement { name = "Tag Reader", value = Prop.Int 3 }
           ]
         , action =
-          [ ConfigAction { name = "South Door", value = Prop.String "open" }
-          , ConfigAction { name = "East Door", value = Prop.String "open" }
+          [ ConfigActionElement { name = "South Door", value = Prop.String "open" }
+          , ConfigActionElement { name = "East Door", value = Prop.String "open" }
           ]
         }
 
@@ -234,12 +234,12 @@ spec = do
         { type_ = Rule.Basic
         , description = Just "Tag reader should open door"
         , trigger =
-          [ ConfigTrigger { name = "Tag Reader 1", value = Prop.Int 3 }
-          , ConfigTrigger { name = "Tag Reader 2", value = Prop.Int 1 }
+          [ ConfigTriggerElement { name = "Tag Reader 1", value = Prop.Int 3 }
+          , ConfigTriggerElement { name = "Tag Reader 2", value = Prop.Int 1 }
           ]
         , action =
-          [ ConfigAction { name = "South Door", value = Prop.String "open" }
-          , ConfigAction { name = "East Door", value = Prop.String "open" }
+          [ ConfigActionElement { name = "South Door", value = Prop.String "open" }
+          , ConfigActionElement { name = "East Door", value = Prop.String "open" }
           ]
         }
 
@@ -317,54 +317,54 @@ spec = do
             { type_ = Rule.Basic
             , description = Just "First puzzle. Open the South door to get to the next room"
             , trigger =
-              [ ConfigTrigger { name = "Card Spot 1", value = Prop.Int 3 }
+              [ ConfigTriggerElement { name = "Card Spot 1", value = Prop.Int 3 }
               ]
             , action =
-              [ ConfigAction { name = "South Door", value = Prop.String "open" }
+              [ ConfigActionElement { name = "South Door", value = Prop.String "open" }
               ]
             }
           , ConfigRule
             { type_ = Rule.Sequence
             , description = Just "Get card 4 from the big lockbox"
             , trigger =
-              [ ConfigTrigger { name = "Button Puzzle", value = Prop.Int 1 }
-              , ConfigTrigger { name = "Button Puzzle", value = Prop.Int 2 }
-              , ConfigTrigger { name = "Button Puzzle", value = Prop.Int 3 }
-              , ConfigTrigger { name = "Button Puzzle", value = Prop.Int 4 }
+              [ ConfigTriggerElement { name = "Button Puzzle", value = Prop.Int 1 }
+              , ConfigTriggerElement { name = "Button Puzzle", value = Prop.Int 2 }
+              , ConfigTriggerElement { name = "Button Puzzle", value = Prop.Int 3 }
+              , ConfigTriggerElement { name = "Button Puzzle", value = Prop.Int 4 }
               ]
             , action =
-              [ ConfigAction { name = "Big Lockbox", value = Prop.String "unlocked" }
+              [ ConfigActionElement { name = "Big Lockbox", value = Prop.String "unlocked" }
               ]
             }
           , ConfigRule
             { type_ = Rule.Basic
             , description = Just "Get card 2 from the first small lockbox"
             , trigger =
-              [ ConfigTrigger { name = "Card Spot 1", value = Prop.Int 4 }
+              [ ConfigTriggerElement { name = "Card Spot 1", value = Prop.Int 4 }
               ]
             , action =
-              [ ConfigAction { name = "Small Lockbox 1", value = Prop.String "unlocked" }
+              [ ConfigActionElement { name = "Small Lockbox 1", value = Prop.String "unlocked" }
               ]
             }
           , ConfigRule
             { type_ = Rule.Basic
             , description = Just "Get the piano chord from the second small lockbox"
             , trigger =
-              [ ConfigTrigger { name = "Card Spot 1", value = Prop.Int 1 }
-              , ConfigTrigger { name = "Card Spot 2", value = Prop.Int 2 }
+              [ ConfigTriggerElement { name = "Card Spot 1", value = Prop.Int 1 }
+              , ConfigTriggerElement { name = "Card Spot 2", value = Prop.Int 2 }
               ]
             , action =
-              [ ConfigAction { name = "Small Lockbox 2", value = Prop.String "unlocked" }
+              [ ConfigActionElement { name = "Small Lockbox 2", value = Prop.String "unlocked" }
               ]
             }
           , ConfigRule
             { type_ = Rule.Basic
             , description = Just "Play the right chord to get out!"
             , trigger =
-              [ ConfigTrigger { name = "Mini Piano", value = Prop.IntList [1,0,0,0,1,0,0,1,0,0,0,0,0] }
+              [ ConfigTriggerElement { name = "Mini Piano", value = Prop.IntList [1,0,0,0,1,0,0,1,0,0,0,0,0] }
               ]
             , action =
-              [ ConfigAction { name = "East Door", value = Prop.String "open" }
+              [ ConfigActionElement { name = "East Door", value = Prop.String "open" }
               ]
             }
           ]

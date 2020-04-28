@@ -17,38 +17,41 @@ import Types.Rule
   )
 import qualified Types.Prop as Prop
 
-data ConfigTrigger
-  = ConfigTrigger
+data ConfigTriggerElement
+  = ConfigTriggerElement
   { name :: Prop.Name
   , value :: Prop.Value
   }
   deriving (Show, Eq, Generic, ToJSON)
 
-instance FromJSON ConfigTrigger where
+instance FromJSON ConfigTriggerElement where
   parseJSON = withObject "name-value" $ \o -> do
     let [(name, value')] = HM.toList o
     value <- parseJSON value'
-    return $ ConfigTrigger name value
+    return $ ConfigTriggerElement name value
 
-data ConfigAction
-  = ConfigAction
+data ConfigActionElement
+  = ConfigActionElement
   { name :: Prop.Name
   , value :: Prop.Value
   }
   deriving (Show, Eq, Generic, ToJSON)
 
-instance FromJSON ConfigAction where
+instance FromJSON ConfigActionElement where
   parseJSON = withObject "name-value" $ \o -> do
     let [(name, value')] = HM.toList o
     value <- parseJSON value'
-    return $ ConfigAction name value
+    return $ ConfigActionElement name value
+
+type ConfigTrigger = [ConfigTriggerElement]
+type ConfigAction = [ConfigActionElement]
 
 data ConfigRule
   = ConfigRule
   { type_ :: Type
   , description :: Description
-  , trigger :: [ConfigTrigger]
-  , action :: [ConfigAction]
+  , trigger :: ConfigTrigger
+  , action :: ConfigAction
   }
   deriving (Show, Eq, Generic, ToJSON)
 

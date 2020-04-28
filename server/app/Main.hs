@@ -13,7 +13,6 @@ import Control.Concurrent
 import Options.Applicative
   ( execParser
   )
-import qualified Data.Yaml as Yaml
 
 import Options
   ( options
@@ -21,13 +20,16 @@ import Options
   )
 import Packet
   ( fromBytes
-  , Packet(..)
   )
-import qualified Command as Cmd
 import ReliableSerial
   ( recvRawPacket
   )
-import qualified Types.Prop as P
+-- import qualified Command as Cmd
+-- import qualified Types.Prop as Prop
+-- import qualified Types.Rule as Rule
+-- import qualified Config
+-- import qualified State
+-- import qualified Rules
 
 secondsToMicro :: Int -> Int
 secondsToMicro = (* 1000) . (* 1000)
@@ -54,8 +56,11 @@ serialLoop s = do
       either putStrLn print p
   serialLoop s
 
-test :: IO ()
-test = do
-  let pld = P.IntList [3, 2, 1]
-  let p = Packet { propAddress = 1, commandID = Cmd.PayloadIntList, payload = pld }
-  print $ Yaml.encode p
+-- test :: IO ()
+-- test = do
+--   result <- Config.readConfig "test/data/config.yaml"
+--   let (Right config) = result
+--   let (Right state) = State.fromConfig (Config.props config)
+--   let (Right rules) = Rules.fromConfig state (Config.rules config)
+--   let firstTrigger = Rule.trigger . head $ rules
+--   print $ all (State.checkTrigger state) firstTrigger

@@ -12,14 +12,14 @@ import Types.Prop
 import qualified Types.Prop as Prop
 import Types.Rule
   ( Rule(..)
-  , Trigger(..)
-  , Action(..)
+  , TriggerElement(..)
+  , ActionElement(..)
   )
 import qualified Types.Rule as Rule
 import Config
   ( ConfigRule(..)
-  , ConfigTrigger(..)
-  , ConfigAction(..)
+  , ConfigTriggerElement(..)
+  , ConfigActionElement(..)
   )
 
 spec :: Spec
@@ -125,54 +125,54 @@ spec = do
             { type_ = Rule.Basic
             , description = Just "First puzzle. Open the South door to get to the next room"
             , trigger =
-              [ ConfigTrigger { name = "Card Spot 1", value = Prop.Int 3 }
+              [ ConfigTriggerElement { name = "Card Spot 1", value = Prop.Int 3 }
               ]
             , action =
-              [ ConfigAction { name = "South Door", value = Prop.String "open" }
+              [ ConfigActionElement { name = "South Door", value = Prop.String "open" }
               ]
             }
           , ConfigRule
             { type_ = Rule.Sequence
             , description = Just "Get card 4 from the big lockbox"
             , trigger =
-              [ ConfigTrigger { name = "Button Puzzle", value = Prop.Int 1 }
-              , ConfigTrigger { name = "Button Puzzle", value = Prop.Int 2 }
-              , ConfigTrigger { name = "Button Puzzle", value = Prop.Int 3 }
-              , ConfigTrigger { name = "Button Puzzle", value = Prop.Int 4 }
+              [ ConfigTriggerElement { name = "Button Puzzle", value = Prop.Int 1 }
+              , ConfigTriggerElement { name = "Button Puzzle", value = Prop.Int 2 }
+              , ConfigTriggerElement { name = "Button Puzzle", value = Prop.Int 3 }
+              , ConfigTriggerElement { name = "Button Puzzle", value = Prop.Int 4 }
               ]
             , action =
-              [ ConfigAction { name = "Big Lockbox", value = Prop.String "unlocked" }
+              [ ConfigActionElement { name = "Big Lockbox", value = Prop.String "unlocked" }
               ]
             }
           , ConfigRule
             { type_ = Rule.Basic
             , description = Just "Get card 2 from the first small lockbox"
             , trigger =
-              [ ConfigTrigger { name = "Card Spot 1", value = Prop.Int 4 }
+              [ ConfigTriggerElement { name = "Card Spot 1", value = Prop.Int 4 }
               ]
             , action =
-              [ ConfigAction { name = "Small Lockbox 1", value = Prop.String "unlocked" }
+              [ ConfigActionElement { name = "Small Lockbox 1", value = Prop.String "unlocked" }
               ]
             }
           , ConfigRule
             { type_ = Rule.Basic
             , description = Just "Get the piano chord from the second small lockbox"
             , trigger =
-              [ ConfigTrigger { name = "Card Spot 1", value = Prop.Int 1 }
-              , ConfigTrigger { name = "Card Spot 2", value = Prop.Int 2 }
+              [ ConfigTriggerElement { name = "Card Spot 1", value = Prop.Int 1 }
+              , ConfigTriggerElement { name = "Card Spot 2", value = Prop.Int 2 }
               ]
             , action =
-              [ ConfigAction { name = "Small Lockbox 2", value = Prop.String "unlocked" }
+              [ ConfigActionElement { name = "Small Lockbox 2", value = Prop.String "unlocked" }
               ]
             }
           , ConfigRule
             { type_ = Rule.Basic
             , description = Just "Play the right chord to get out!"
             , trigger =
-              [ ConfigTrigger { name = "Mini Piano", value = Prop.IntList [1,0,0,0,1,0,0,1,0,0,0,0,0] }
+              [ ConfigTriggerElement { name = "Mini Piano", value = Prop.IntList [1,0,0,0,1,0,0,1,0,0,0,0,0] }
               ]
             , action =
-              [ ConfigAction { name = "East Door", value = Prop.String "open" }
+              [ ConfigActionElement { name = "East Door", value = Prop.String "open" }
               ]
             }
           ]
@@ -184,54 +184,54 @@ spec = do
           { type_ = Rule.Basic
           , description = Just "First puzzle. Open the South door to get to the next room"
           , trigger =
-            [ Trigger { propKey = 1, value = Prop.Int 3 }
+            [ TriggerElement { propKey = 1, value = Prop.Int 3 }
             ]
           , action =
-            [ Action { propKey = 4, value = Prop.String "open" }
+            [ ActionElement { propKey = 4, value = Prop.String "open" }
             ]
           }
         , Rule
           { type_ = Rule.Sequence
           , description = Just "Get card 4 from the big lockbox"
           , trigger =
-            [ Trigger { propKey = 8, value = Prop.Int 1 }
-            , Trigger { propKey = 8, value = Prop.Int 2 }
-            , Trigger { propKey = 8, value = Prop.Int 3 }
-            , Trigger { propKey = 8, value = Prop.Int 4 }
+            [ TriggerElement { propKey = 8, value = Prop.Int 1 }
+            , TriggerElement { propKey = 8, value = Prop.Int 2 }
+            , TriggerElement { propKey = 8, value = Prop.Int 3 }
+            , TriggerElement { propKey = 8, value = Prop.Int 4 }
             ]
           , action =
-            [ Action { propKey = 5, value = Prop.String "unlocked" }
+            [ ActionElement { propKey = 5, value = Prop.String "unlocked" }
             ]
           }
         , Rule
           { type_ = Rule.Basic
           , description = Just "Get card 2 from the first small lockbox"
           , trigger =
-            [ Trigger { propKey = 1, value = Prop.Int 4 }
+            [ TriggerElement { propKey = 1, value = Prop.Int 4 }
             ]
           , action =
-            [ Action { propKey = 6, value = Prop.String "unlocked" }
+            [ ActionElement { propKey = 6, value = Prop.String "unlocked" }
             ]
           }
         , Rule
           { type_ = Rule.Basic
           , description = Just "Get the piano chord from the second small lockbox"
           , trigger =
-            [ Trigger { propKey = 1, value = Prop.Int 1 }
-            , Trigger { propKey = 2, value = Prop.Int 2 }
+            [ TriggerElement { propKey = 1, value = Prop.Int 1 }
+            , TriggerElement { propKey = 2, value = Prop.Int 2 }
             ]
           , action =
-            [ Action { propKey = 7, value = Prop.String "unlocked" }
+            [ ActionElement { propKey = 7, value = Prop.String "unlocked" }
             ]
           }
         , Rule
           { type_ = Rule.Basic
           , description = Just "Play the right chord to get out!"
           , trigger =
-            [ Trigger { propKey = 9, value = Prop.IntList [1,0,0,0,1,0,0,1,0,0,0,0,0] }
+            [ TriggerElement { propKey = 9, value = Prop.IntList [1,0,0,0,1,0,0,1,0,0,0,0,0] }
             ]
           , action =
-            [ Action { propKey = 10, value = Prop.String "open" }
+            [ ActionElement { propKey = 10, value = Prop.String "open" }
             ]
           }
         ]

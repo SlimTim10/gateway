@@ -24,22 +24,25 @@ instance FromJSON Type where
 
 type Description = Maybe Text
 
-data Trigger = Trigger
+data TriggerElement = TriggerElement
   { propKey :: Int
   , value :: Prop.Value
   }
   deriving (Show, Eq)
 
-data Action = Action
+data ActionElement = ActionElement
   { propKey :: Int
   , value :: Prop.Value
   }
   deriving (Show, Eq)
+
+type Trigger = [TriggerElement]
+type Action = [ActionElement]
 
 data Rule = Rule
   { type_ :: Type
   , description :: Description
-  , trigger :: [Trigger]
-  , action :: [Action]
+  , trigger :: Trigger
+  , action :: Action
   }
   deriving (Show, Eq)

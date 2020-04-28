@@ -3,8 +3,10 @@ module Config
   , readConfig
   , ConfigProp(..)
   , ConfigRule(..)
-  , ConfigTrigger(..)
-  , ConfigAction(..)
+  , ConfigTriggerElement(..)
+  , ConfigTrigger
+  , ConfigActionElement(..)
+  , ConfigAction
   -- , validate
   ) where
 
@@ -21,8 +23,10 @@ import Config.Prop
   )
 import Config.Rule
   ( ConfigRule(..)
-  , ConfigTrigger(..)
-  , ConfigAction(..)
+  , ConfigTriggerElement(..)
+  , ConfigTrigger
+  , ConfigActionElement(..)
+  , ConfigAction
   )
 
 data Config
