@@ -26,9 +26,11 @@ data ConfigTriggerElement
 
 instance FromJSON ConfigTriggerElement where
   parseJSON = withObject "name-value" $ \o -> do
-    let [(name, value')] = HM.toList o
-    value <- parseJSON value'
-    return $ ConfigTriggerElement name value
+    case HM.toList o of
+      [(name, value')] -> do
+        value <- parseJSON value'
+        return $ ConfigTriggerElement name value
+      _ -> error "Could not parse ConfigTriggerElement"
 
 data ConfigActionElement
   = ConfigActionElement
@@ -39,9 +41,11 @@ data ConfigActionElement
 
 instance FromJSON ConfigActionElement where
   parseJSON = withObject "name-value" $ \o -> do
-    let [(name, value')] = HM.toList o
-    value <- parseJSON value'
-    return $ ConfigActionElement name value
+    case HM.toList o of
+      [(name, value')] -> do
+        value <- parseJSON value'
+        return $ ConfigActionElement name value
+      _ -> error "Could not parse ConfigActionElement"
 
 type ConfigTrigger = [ConfigTriggerElement]
 type ConfigAction = [ConfigActionElement]

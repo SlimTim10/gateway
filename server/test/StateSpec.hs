@@ -4,7 +4,6 @@ import Test.Hspec
 import State
 
 import qualified Data.IntMap.Strict as IntMap
-import Data.Either (isRight)
 
 import Types.Prop
   ( Prop(..)
@@ -81,9 +80,7 @@ spec = do
             , defaultValue = Prop.String "closed"
             }
           ]
-      let result = fromConfig cprops
-      result `shouldSatisfy` isRight
-      let (Right state) = result
+      let state = fromConfig cprops
       state `shouldBe`
         IntMap.fromAscList
         [ ( 1

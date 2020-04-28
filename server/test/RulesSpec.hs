@@ -4,7 +4,7 @@ import Test.Hspec
 import Rules
 
 import qualified Data.IntMap.Strict as IntMap
-import Data.Either (isRight)
+import Data.Either (isRight, fromRight)
 
 import Types.Prop
   ( Prop(..)
@@ -178,7 +178,7 @@ spec = do
           ]
       let result = fromConfig state crules
       result `shouldSatisfy` isRight
-      let (Right rules) = result
+      let rules = fromRight [] result
       rules `shouldBe`
         [ Rule
           { type_ = Rule.Basic

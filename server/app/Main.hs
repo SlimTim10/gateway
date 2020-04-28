@@ -26,10 +26,16 @@ import ReliableSerial
   )
 -- import qualified Command as Cmd
 -- import qualified Types.Prop as Prop
--- import qualified Types.Rule as Rule
--- import qualified Config
--- import qualified State
--- import qualified Rules
+import qualified Types.Rule as Rule
+import Config
+  ( Config
+  )
+import qualified Config
+import State
+  ( State
+  )
+import qualified State
+import qualified Rules
 
 secondsToMicro :: Int -> Int
 secondsToMicro = (* 1000) . (* 1000)
@@ -56,11 +62,25 @@ serialLoop s = do
       either putStrLn print p
   serialLoop s
 
--- test :: IO ()
--- test = do
---   result <- Config.readConfig "test/data/config.yaml"
---   let (Right config) = result
---   let (Right state) = State.fromConfig (Config.props config)
---   let (Right rules) = Rules.fromConfig state (Config.rules config)
---   let firstTrigger = Rule.trigger . head $ rules
---   print $ all (State.checkTrigger state) firstTrigger
+dev :: IO ()
+dev = do
+  result <- Config.readConfig "test/data/config.yaml"
+  case result of
+    Left err -> print err
+    Right config -> do
+      let state = State.fromConfig (Config.props config)
+      print state
+      print config
+      -- Left err -> print err
+      -- Right ft -> print $ State.checkTrigger state ft
+
+-- activeActions :: Config -> [Action]
+-- activeActions config = do
+--   state <- State.fromConfig (Config.props config)
+--   rules <- Rules.fromConfig state (Config.rules config)
+  
+
+firstTrigger :: State -> Config -> Either String Rule.Trigger
+firstTrigger state config = do
+  rules <- Rules.fromConfig state (Config.rules config)
+  return $ Rule.trigger . head $ rules

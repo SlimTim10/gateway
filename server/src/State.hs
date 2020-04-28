@@ -8,6 +8,7 @@ import Data.IntMap.Strict
   , (!?)
   )
 import qualified Data.IntMap.Strict as IntMap
+import Data.List (foldl')
 
 import Types.Prop
   ( Prop(..)
@@ -25,8 +26,8 @@ import Types.Rule
 
 type State = IntMap Prop
 
-fromConfig :: [ConfigProp] -> Either String State
-fromConfig cProps = Right $ IntMap.fromAscList lst
+fromConfig :: [ConfigProp] -> State
+fromConfig cProps = IntMap.fromAscList lst
   where
     ps = map fromConfigProp cProps
     lst = zip [1..] ps
@@ -41,7 +42,7 @@ fromConfigProp cProp = Prop
   }
 
 checkTrigger :: State -> Trigger -> Bool
-checkTrigger = undefined
+checkTrigger state = all (checkTriggerElement state)
 
 checkTriggerElement :: State -> TriggerElement -> Bool
 checkTriggerElement
@@ -53,7 +54,7 @@ checkTriggerElement
     Just prop -> Prop.value prop == tv
 
 applyAction :: State -> Action -> State
-applyAction = undefined
+applyAction = foldl' applyActionElement
 
 applyActionElement :: State -> ActionElement -> State
 applyActionElement

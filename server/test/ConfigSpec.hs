@@ -4,10 +4,32 @@ import Test.Hspec
 import Config
 
 import Data.Yaml (decodeEither', ParseException)
-import Data.Either (isRight, isLeft)
+import Data.Either (isRight, isLeft, fromRight)
 
 import qualified Types.Prop as Prop
 import qualified Types.Rule as Rule
+
+emptyProp :: ConfigProp
+emptyProp = ConfigProp
+  { name = ""
+  , description = Nothing
+  , address = 0
+  , defaultValue = Prop.Nothing
+  }
+
+emptyRule :: ConfigRule
+emptyRule = ConfigRule
+  { type_ = Rule.Basic
+  , description = Nothing
+  , trigger = []
+  , action = []
+  }
+
+emptyConfig :: Config
+emptyConfig = Config
+  { props = []
+  , rules = []
+  }
 
 spec :: Spec
 spec = do
@@ -20,7 +42,7 @@ spec = do
 \ default-value: 1"
       let result = decodeEither' yaml :: Either ParseException ConfigProp
       result `shouldSatisfy` isRight
-      let (Right prop) = result
+      let prop = fromRight emptyProp result
       prop `shouldBe`
         ConfigProp
         { name = "Tag Reader"
@@ -37,7 +59,7 @@ spec = do
 \ default-value: closed"
       let result = decodeEither' yaml :: Either ParseException ConfigProp
       result `shouldSatisfy` isRight
-      let (Right prop) = result
+      let prop = fromRight emptyProp result
       prop `shouldBe`
         ConfigProp
         { name = "Door"
@@ -54,7 +76,7 @@ spec = do
 \ default-value: [0,0,0,0,0,0,0,0,0,0,0,0,0]"
       let result = decodeEither' yaml :: Either ParseException ConfigProp
       result `shouldSatisfy` isRight
-      let (Right prop) = result
+      let prop = fromRight emptyProp result
       prop `shouldBe`
         ConfigProp
         { name = "Mini Piano"
@@ -70,7 +92,7 @@ spec = do
 \ default-value: 1"
       let result = decodeEither' yaml :: Either ParseException ConfigProp
       result `shouldSatisfy` isRight
-      let (Right prop) = result
+      let prop = fromRight emptyProp result
       prop `shouldBe`
         ConfigProp
         { name = "Tag Reader"
@@ -91,7 +113,7 @@ spec = do
 \   default-value: closed"
       let result = decodeEither' yaml :: Either ParseException [ConfigProp]
       result `shouldSatisfy` isRight
-      let (Right props) = result
+      let props = fromRight [] result
       props `shouldBe`
         [ ConfigProp
           { name = "Tag Reader"
@@ -153,7 +175,7 @@ spec = do
 \   - South Door: open"
       let result = decodeEither' yaml :: Either ParseException ConfigRule
       result `shouldSatisfy` isRight
-      let (Right rule) = result
+      let rule = fromRight emptyRule result
       rule `shouldBe`
         ConfigRule
         { type_ = Rule.Basic
@@ -177,7 +199,7 @@ spec = do
 \   - South Door: open"
       let result = decodeEither' yaml :: Either ParseException ConfigRule
       result `shouldSatisfy` isRight
-      let (Right rule) = result
+      let rule = fromRight emptyRule result
       rule `shouldBe`
         ConfigRule
         { type_ = Rule.Basic
@@ -202,7 +224,7 @@ spec = do
 \   - East Door: open"
       let result = decodeEither' yaml :: Either ParseException ConfigRule
       result `shouldSatisfy` isRight
-      let (Right rule) = result
+      let rule = fromRight emptyRule result
       rule `shouldBe`
         ConfigRule
         { type_ = Rule.Basic
@@ -228,7 +250,7 @@ spec = do
 \   - East Door: open"
       let result = decodeEither' yaml :: Either ParseException ConfigRule
       result `shouldSatisfy` isRight
-      let (Right rule) = result
+      let rule = fromRight emptyRule result
       rule `shouldBe`
         ConfigRule
         { type_ = Rule.Basic
@@ -247,7 +269,7 @@ spec = do
     it "parses an entire config file in YAML" $ do
       result <- readConfig "test/data/config.yaml"
       result `shouldSatisfy` isRight
-      let (Right config) = result
+      let config = fromRight emptyConfig result
       config `shouldBe`
         Config
         { props =
