@@ -13,6 +13,7 @@ import Control.Concurrent
 import Options.Applicative
   ( execParser
   )
+-- import Text.Pretty.Simple (pPrint)
 
 import Options
   ( options
@@ -32,7 +33,9 @@ import qualified Types.Rule as Rule
 import qualified Config
 import State
   ( State
-  , checkTrigger
+  )
+import Server
+  ( checkTrigger
   , applyAction
   )
 import qualified State
@@ -78,10 +81,18 @@ dev = do
         Right rules -> do
           putStr "Before: "
           print $ triggeredRules state rules
-          let readCard3 = [Rule.ActionElement { propKey = 1, value = Prop.Int 3 }]
-          let state' = applyAction state readCard3
+          let
+            readCards =
+              [ Rule.ActionElement { propKey = 1, value = Prop.Int 1 }
+              , Rule.ActionElement { propKey = 2, value = Prop.Int 2 }
+              ]
+          let state' = applyAction state readCards
           putStr "After: "
-          print $ triggeredRules state' rules
+          let tRules = triggeredRules state' rules
+          print tRules
+          putStrLn "New state: "
+          let state'' = applyAction state' (Rule.action . head $ tRules)
+          print state''
 
 triggeredRules :: State -> Rules -> Rules
 triggeredRules state = filter (triggeredRule state)
