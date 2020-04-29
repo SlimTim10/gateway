@@ -4,7 +4,8 @@ packages:
 - .
 
 extra-deps:
-- serialport-0.4.7
+- serialport-0.4.7@sha256:faff483f73c8e8e9661dae3788795bb0f4a38413a49fccb77bcdc6827af50182,1430
+- fast-builder-0.1.2.0@sha256:d01db8a5f1ac262e2db0375c47e46660c67ad4145bef64cc7303ade096e461ee,2801
 
 ghc-options:
     # All packages

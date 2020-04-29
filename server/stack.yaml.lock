@@ -10,7 +10,14 @@ packages:
       size: 762
       sha256: 50b9cd8cc7937d91834a499171f8d0904f63381dda4d90b546fa6f16f1bec2c3
   original:
-    hackage: serialport-0.4.7
+    hackage: serialport-0.4.7@sha256:faff483f73c8e8e9661dae3788795bb0f4a38413a49fccb77bcdc6827af50182,1430
+- completed:
+    hackage: fast-builder-0.1.2.0@sha256:d01db8a5f1ac262e2db0375c47e46660c67ad4145bef64cc7303ade096e461ee,2801
+    pantry-tree:
+      size: 1058
+      sha256: b38174b316e6609a6a45da8989470556c8450e87f60f294ed709dc50d905de67
+  original:
+    hackage: fast-builder-0.1.2.0@sha256:d01db8a5f1ac262e2db0375c47e46660c67ad4145bef64cc7303ade096e461ee,2801
 snapshots:
 - completed:
     size: 491372

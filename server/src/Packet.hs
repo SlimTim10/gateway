@@ -12,15 +12,12 @@ import Data.Aeson
   , ToJSON
   )
 import qualified Data.ByteString.Char8 as B
-import Data.ByteString.Lazy.Char8
-  ( fromStrict
-  , toStrict
-  )
+import Data.ByteString.Lazy.Char8 (fromStrict)
 import qualified Data.Binary.Get as Bin
 import Data.Char (ord)
 import Data.Word (Word8, Word32)
-import Data.ByteString.Builder
-  ( toLazyByteString
+import Data.ByteString.FastBuilder
+  ( toStrictByteString
   , word32BE
   , word8
   )
@@ -125,8 +122,8 @@ toRaw
   }
   = B.concat
   $
-  [ toStrict . toLazyByteString . word32BE $ addr
-  , toStrict . toLazyByteString . word8 . Cmd.toInt $ cmd
+  [ toStrictByteString . word32BE $ addr
+  , toStrictByteString . word8 . Cmd.toInt $ cmd
   , Prop.rawValue pld
   ]
 

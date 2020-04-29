@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f93b6580f1877ae94184a5203d98a04841f4ad6e039ae58a87d21671fa9b1c19
+-- hash: a7b761f58b298f48cd6d5cc0f37ccb62deb97c5b86b4b9bd535dfc4895a7ddec
 
 name:           server
 version:        0.1.0.0
@@ -51,6 +51,7 @@ library
     , binary >=0.8.6.0 && <0.9
     , bytestring >=0.10.10.0 && <0.11
     , containers >=0.6.2.1 && <0.7
+    , fast-builder >=0.1.2.0 && <0.2
     , mtl >=2.2 && <2.3
     , optparse-applicative >=0.15.0.0 && <0.16
     , scientific >=0.3.6.2 && <0.4
@@ -77,6 +78,7 @@ executable server-exe
     , binary >=0.8.6.0 && <0.9
     , bytestring >=0.10.10.0 && <0.11
     , containers >=0.6.2.1 && <0.7
+    , fast-builder >=0.1.2.0 && <0.2
     , mtl >=2.2 && <2.3
     , optparse-applicative >=0.15.0.0 && <0.16
     , scientific >=0.3.6.2 && <0.4
@@ -111,6 +113,7 @@ test-suite server-test
     , binary >=0.8.6.0 && <0.9
     , bytestring >=0.10.10.0 && <0.11
     , containers >=0.6.2.1 && <0.7
+    , fast-builder >=0.1.2.0 && <0.2
     , hspec
     , mtl >=2.2 && <2.3
     , optparse-applicative >=0.15.0.0 && <0.16

@@ -2,14 +2,16 @@ module Server
   ( checkTrigger
   , applyAction
   , sendPacket
+  , runRules
   ) where
 
 import Data.List (foldl')
 import System.Hardware.Serialport (SerialPort)
+import Control.Monad (foldM)
 
 import Types.Rule
-  -- ( Rule(..)
-  ( TriggerElement(..)
+  ( Rule(..)
+  , TriggerElement(..)
   , Trigger
   , ActionElement(..)
   , Action
@@ -18,13 +20,14 @@ import State
   ( State
   , (!?)
   )
-import qualified State
 import Types.Prop (Prop(..))
 import qualified Types.Prop as Prop
 import Packet (Packet(..))
 import qualified Packet
 import ReliableSerial (sendRawPacket)
 import qualified Command as Cmd
+import qualified State
+import Rules (Rules)
 
 checkTrigger :: State -> Trigger -> Bool
 checkTrigger state = all (checkTriggerElement state)
@@ -53,15 +56,8 @@ applyActionElement
 sendPacket :: SerialPort -> Packet -> IO (Int)
 sendPacket serial packet = sendRawPacket serial (Packet.toRaw packet)
 
--- executeRule :: State -> Rule -> IO (State)
--- executeRule
---   state
---   Rule { trigger = trg, action = act }
---   | checkTrigger state trg = return state
---   | otherwise = return state
-
-executeActionElement :: SerialPort -> State -> ActionElement -> IO (State)
-executeActionElement
+runActionElement :: SerialPort -> State -> ActionElement -> IO (State)
+runActionElement
   serial
   state
   ae@(ActionElement { propKey = key, value = v })
@@ -84,6 +80,16 @@ executeActionElement
   let state' = applyActionElement state ae
   return state'
 
--- executeRules :: State -> Rules -> IO (State)
--- executeRules state rules = do
---   sendRawPacket
+runAction :: SerialPort -> State -> Action -> IO (State)
+runAction serial = foldM (runActionElement serial)
+
+runRule :: SerialPort -> State -> Rule -> IO (State)
+runRule
+  serial
+  state
+  Rule { trigger = trg, action = act }
+  | checkTrigger state trg = runAction serial state act
+  | otherwise = return state
+
+runRules :: SerialPort -> State -> Rules -> IO (State)
+runRules serial = foldM (runRule serial)
