@@ -24,17 +24,21 @@ import Packet
 import ReliableSerial
   ( recvRawPacket
   )
--- import qualified Command as Cmd
--- import qualified Types.Prop as Prop
-import qualified Types.Rule as Rule
-import Config
-  ( Config
+import qualified Types.Prop as Prop
+import Types.Rule
+  ( Rule(..)
   )
+import qualified Types.Rule as Rule
 import qualified Config
 import State
   ( State
+  , checkTrigger
+  , applyAction
   )
 import qualified State
+import Rules
+  ( Rules
+  )
 import qualified Rules
 
 secondsToMicro :: Int -> Int
@@ -69,18 +73,18 @@ dev = do
     Left err -> print err
     Right config -> do
       let state = State.fromConfig (Config.props config)
-      print state
-      print config
-      -- Left err -> print err
-      -- Right ft -> print $ State.checkTrigger state ft
+      case Rules.fromConfig state (Config.rules config) of
+        Left err -> print err
+        Right rules -> do
+          putStr "Before: "
+          print $ triggeredRules state rules
+          let readCard3 = [Rule.ActionElement { propKey = 1, value = Prop.Int 3 }]
+          let state' = applyAction state readCard3
+          putStr "After: "
+          print $ triggeredRules state' rules
 
--- activeActions :: Config -> [Action]
--- activeActions config = do
---   state <- State.fromConfig (Config.props config)
---   rules <- Rules.fromConfig state (Config.rules config)
-  
+triggeredRules :: State -> Rules -> Rules
+triggeredRules state = filter (triggeredRule state)
 
-firstTrigger :: State -> Config -> Either String Rule.Trigger
-firstTrigger state config = do
-  rules <- Rules.fromConfig state (Config.rules config)
-  return $ Rule.trigger . head $ rules
+triggeredRule :: State -> Rule -> Bool
+triggeredRule state (Rule { trigger = t }) = checkTrigger state t
