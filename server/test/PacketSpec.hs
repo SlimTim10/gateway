@@ -3,12 +3,19 @@ module PacketSpec (spec) where
 import Test.Hspec
 import Packet
 
-import Data.Either (isLeft, isRight)
+import Data.Either (isLeft, isRight, fromRight)
 import qualified Data.ByteString.Char8 as B
 import Data.Char (chr)
 
 import qualified Types.Prop as Prop
 import qualified Command as Cmd
+
+emptyPacket :: Packet
+emptyPacket = Packet
+  { propAddress = 0
+  , commandID = Cmd.Ping
+  , payload = Prop.Nothing
+  }
 
 spec :: Spec
 spec = do
@@ -17,8 +24,8 @@ spec = do
       True `shouldBe` True
       contents <- readPacket "test/data/packet.json"
       contents `shouldSatisfy` isRight
-      let (Right pkt) = contents
-      pkt `shouldBe`
+      let packet = fromRight emptyPacket contents
+      packet `shouldBe`
         Packet
         { propAddress = 1
         , commandID = Cmd.PayloadInt
@@ -30,8 +37,8 @@ spec = do
       let bs = [0x00, 0x00, 0x00, 0x01, 0x01, 0x01]
       let p = fromBytes $ B.pack . map chr $ bs
       p `shouldSatisfy` isRight
-      let (Right pkt) = p
-      pkt `shouldBe` 
+      let packet = fromRight emptyPacket p
+      packet `shouldBe` 
         Packet
         { propAddress = 1
         , commandID = Cmd.PayloadInt
@@ -42,8 +49,8 @@ spec = do
       let bs = [0x00, 0x00, 0x00, 0x01, 0x02, 0x01, 0x02, 0x03]
       let p = fromBytes $ B.pack . map chr $ bs
       p `shouldSatisfy` isRight
-      let (Right pkt) = p
-      pkt `shouldBe` 
+      let packet = fromRight emptyPacket p
+      packet `shouldBe` 
         Packet
         { propAddress = 1
         , commandID = Cmd.PayloadIntList
@@ -54,8 +61,8 @@ spec = do
       let bs = [0x00, 0x00, 0x00, 0x01, 0x03, 0x63, 0x6C, 0x6F, 0x73, 0x65, 0x64]
       let p = fromBytes $ B.pack . map chr $ bs
       p `shouldSatisfy` isRight
-      let (Right pkt) = p
-      pkt `shouldBe` 
+      let packet = fromRight emptyPacket p
+      packet `shouldBe` 
         Packet
         { propAddress = 1
         , commandID = Cmd.PayloadString
@@ -66,8 +73,8 @@ spec = do
       let bs = [0x00, 0x00, 0x00, 0x01, 0x80]
       let p = fromBytes $ B.pack . map chr $ bs
       p `shouldSatisfy` isRight
-      let (Right pkt) = p
-      pkt `shouldBe` 
+      let packet = fromRight emptyPacket p
+      packet `shouldBe` 
         Packet
         { propAddress = 1
         , commandID = Cmd.Ping
