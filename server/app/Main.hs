@@ -9,7 +9,7 @@ import System.Hardware.Serialport
   )
 import Control.Concurrent (threadDelay)
 import Options.Applicative (execParser)
--- import Text.Pretty.Simple (pPrint)
+import Text.Pretty.Simple (pPrint)
 
 import Options
   ( options
@@ -78,7 +78,7 @@ dev = do
           print tRules
           putStrLn "New state: "
           let state'' = applyAction state' (Rule.action . head $ tRules)
-          print state''
+          pPrint state''
 
 triggeredRules :: State -> Rules -> Rules
 triggeredRules state = filter (triggeredRule state)
