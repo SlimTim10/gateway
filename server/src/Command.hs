@@ -21,3 +21,10 @@ fromInt x = case x of
   0x03 -> Right PayloadString
   0x80 -> Right Ping
   _ -> Left "Invalid command ID"
+
+toInt :: Command -> Word8
+toInt cmd = case cmd of
+  PayloadInt -> 0x01
+  PayloadIntList -> 0x02
+  PayloadString -> 0x03
+  Ping -> 0x80

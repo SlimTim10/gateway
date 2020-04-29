@@ -1,5 +1,6 @@
 module Types.Prop where
 
+import Prelude hiding (Nothing)
 import GHC.Generics (Generic)
 import Data.Yaml
   ( FromJSON
@@ -14,6 +15,12 @@ import Data.Aeson
   )
 import Data.Word (Word8, Word32)
 import Data.Text (Text)
+import qualified Data.ByteString.Char8 as B
+import Data.ByteString.Lazy.Char8 (toStrict)
+import Data.ByteString.Builder
+  ( toLazyByteString
+  , word8
+  )
 
 type Name = Text
 type Description = Maybe Text
@@ -38,3 +45,9 @@ data Prop = Prop
   , value :: Value
   }
   deriving (Show, Eq)
+
+rawValue :: Value -> B.ByteString
+rawValue Nothing = B.empty
+rawValue (Int x) = toStrict . toLazyByteString . word8 $ x
+rawValue (IntList xs) = toStrict . mconcat . map (toLazyByteString . word8) $ xs
+rawValue (String s) = B.pack s

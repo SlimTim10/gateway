@@ -9,13 +9,13 @@ import System.Hardware.Serialport
   )
 import Control.Concurrent (threadDelay)
 import Options.Applicative (execParser)
-import Text.Pretty.Simple (pPrint)
+-- import Text.Pretty.Simple (pPrint)
 
 import Options
   ( options
   , Options(..)
   )
-import Packet (fromBytes)
+import Packet (fromRaw)
 import ReliableSerial (recvRawPacket)
 import qualified Types.Prop as Prop
 import Types.Rule (Rule(..))
@@ -51,7 +51,7 @@ serialLoop s = do
   case eRawPacket of
     Left e -> putStrLn $ "Error: " ++ e
     Right rawPacket -> do
-      let p = fromBytes rawPacket
+      let p = fromRaw rawPacket
       either putStrLn print p
   serialLoop s
 
@@ -78,7 +78,7 @@ dev = do
           print tRules
           putStrLn "New state: "
           let state'' = applyAction state' (Rule.action . head $ tRules)
-          pPrint state''
+          print state''
 
 triggeredRules :: State -> Rules -> Rules
 triggeredRules state = filter (triggeredRule state)

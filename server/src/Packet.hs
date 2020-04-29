@@ -1,10 +1,8 @@
 module Packet
   ( Packet(..)
   , RawPacket
-  , fromBytes
-  , packetFormat
-  , slice
-  , Format(..)
+  , fromRaw
+  , toRaw
   , readPacket
   ) where
 
@@ -14,22 +12,30 @@ import Data.Aeson
   , ToJSON
   )
 import qualified Data.ByteString.Char8 as B
-import Data.ByteString.Lazy.Char8 (fromStrict)
+import Data.ByteString.Lazy.Char8
+  ( fromStrict
+  , toStrict
+  )
 import qualified Data.Binary.Get as Bin
 import Data.Char (ord)
 import Data.Word (Word8, Word32)
+import Data.ByteString.Builder
+  ( toLazyByteString
+  , word32BE
+  , word8
+  )
 
 import Lib (readJSON)
 import qualified Command as Cmd
 import Command (Command)
-import qualified Types.Prop as P
+import qualified Types.Prop as Prop
 
 type RawPacket = B.ByteString
 
 data Packet = Packet
   { propAddress :: Word32
   , commandID :: Command
-  , payload :: P.Value
+  , payload :: Prop.Value
   }
   deriving (Show, Eq, Generic, ToJSON, FromJSON)
 
@@ -68,7 +74,7 @@ getWord32 bs = fromIntegral $ Bin.runGet Bin.getWord32be (fromStrict bs)
 getWord8 :: B.ByteString -> Word8
 getWord8 bs = fromIntegral $ Bin.runGet Bin.getWord8 (fromStrict bs)
 
-payloadValue :: Command -> B.ByteString -> Either String P.Value
+payloadValue :: Command -> B.ByteString -> Either String Prop.Value
 payloadValue Cmd.PayloadInt bs
   | B.null bs = Left "Couldn't match expected single integer with empty payload"
   | B.length bs > 1 =
@@ -76,19 +82,19 @@ payloadValue Cmd.PayloadInt bs
       $ "Couldn't match expected single Int with payload of "
       ++ show (B.length bs)
       ++ " bytes"
-  | otherwise = Right $ P.Int $ getWord8 bs
+  | otherwise = Right $ Prop.Int $ getWord8 bs
 payloadValue Cmd.PayloadIntList bs
   | B.null bs = Left "Couldn't match expected integer list with empty payload"
-  | otherwise = Right $ P.IntList ns
+  | otherwise = Right $ Prop.IntList ns
   where
     ns = map (fromIntegral . ord) . B.unpack $ bs
 payloadValue Cmd.PayloadString bs
   | B.null bs = Left "Couldn't match expected string with empty payload"
-  | otherwise = Right $ P.String $ B.unpack bs
-payloadValue _ _ = Right P.Nothing
+  | otherwise = Right $ Prop.String $ B.unpack bs
+payloadValue _ _ = Right Prop.Nothing
 
-fromBytes :: RawPacket -> Either String Packet
-fromBytes raw
+fromRaw :: RawPacket -> Either String Packet
+fromRaw raw
   | B.length raw < minPacketSize = Left "Not enough bytes for packet"
   | otherwise = do
       cmd <- Cmd.fromInt rawCmd
@@ -109,6 +115,20 @@ fromBytes raw
     cmdSize = size . (commandID :: PacketFormat -> Format) $ packetFormat
     pldIdx = index . (payload :: PacketFormat -> Format) $ packetFormat
     pldSize = B.length raw - cmdSize - addrSize
+
+toRaw :: Packet -> RawPacket
+toRaw
+  Packet
+  { propAddress = addr
+  , commandID = cmd
+  , payload = pld
+  }
+  = B.concat
+  $
+  [ toStrict . toLazyByteString . word32BE $ addr
+  , toStrict . toLazyByteString . word8 . Cmd.toInt $ cmd
+  , Prop.rawValue pld
+  ]
 
 readPacket :: FilePath -> IO (Either String Packet)
 readPacket = readJSON
