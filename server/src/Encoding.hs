@@ -8,7 +8,10 @@ module Encoding
   where
 
 import qualified Data.ByteString.Char8 as B
-import Data.Char (chr, ord)
+import Data.Char
+  ( chr
+  , ord
+  )
 import Data.List (unfoldr)
 
 cobsEncodeMaxLength :: Int

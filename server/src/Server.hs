@@ -16,9 +16,7 @@ import State
   , (!?)
   )
 import qualified State
-import Types.Prop
-  ( Prop(..)
-  )
+import Types.Prop (Prop(..))
 import qualified Types.Prop as Prop
 
 checkTrigger :: State -> Trigger -> Bool

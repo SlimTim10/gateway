@@ -18,9 +18,7 @@ import Data.Yaml
   , ParseException
   )
 
-import Config.Prop
-  ( ConfigProp(..)
-  )
+import Config.Prop (ConfigProp(..))
 import Config.Rule
   ( ConfigRule(..)
   , ConfigTriggerElement(..)

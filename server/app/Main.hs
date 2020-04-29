@@ -7,41 +7,27 @@ import System.Hardware.Serialport
   , SerialPort
   , SerialPortSettings(..)
   )
-import Control.Concurrent
-  ( threadDelay
-  )
-import Options.Applicative
-  ( execParser
-  )
--- import Text.Pretty.Simple (pPrint)
+import Control.Concurrent (threadDelay)
+import Options.Applicative (execParser)
+import Text.Pretty.Simple (pPrint)
 
 import Options
   ( options
   , Options(..)
   )
-import Packet
-  ( fromBytes
-  )
-import ReliableSerial
-  ( recvRawPacket
-  )
+import Packet (fromBytes)
+import ReliableSerial (recvRawPacket)
 import qualified Types.Prop as Prop
-import Types.Rule
-  ( Rule(..)
-  )
+import Types.Rule (Rule(..))
 import qualified Types.Rule as Rule
 import qualified Config
-import State
-  ( State
-  )
+import State (State)
 import Server
   ( checkTrigger
   , applyAction
   )
 import qualified State
-import Rules
-  ( Rules
-  )
+import Rules (Rules)
 import qualified Rules
 
 secondsToMicro :: Int -> Int
@@ -92,7 +78,7 @@ dev = do
           print tRules
           putStrLn "New state: "
           let state'' = applyAction state' (Rule.action . head $ tRules)
-          print state''
+          pPrint state''
 
 triggeredRules :: State -> Rules -> Rules
 triggeredRules state = filter (triggeredRule state)

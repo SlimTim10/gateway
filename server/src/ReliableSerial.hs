@@ -25,9 +25,7 @@ import Data.Char
   , ord
   )
 
-import Packet
-  ( RawPacket
-  )
+import Packet (RawPacket)
 import Encoding
   ( cobsDecode
   , cobsEncode

@@ -6,9 +6,7 @@ module Rules
 import qualified Data.IntMap.Strict as IntMap
 import Data.List (find)
 
-import State
-  ( State
-  )
+import State (State)
 import Types.Rule
   ( Rule(..)
   , TriggerElement(..)

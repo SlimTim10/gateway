@@ -12,13 +12,9 @@ import Data.IntMap.Strict
   )
 import qualified Data.IntMap.Strict as IntMap
 
-import Types.Prop
-  ( Prop(..)
-  )
+import Types.Prop (Prop(..))
 import qualified Types.Prop as Prop
-import Config
-  ( ConfigProp(..)
-  )
+import Config (ConfigProp(..))
 
 type State = IntMap Prop
 
