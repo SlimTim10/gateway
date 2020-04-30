@@ -7,7 +7,10 @@ module Server
 
 import Data.List (foldl')
 import System.Hardware.Serialport (SerialPort)
-import Control.Monad (foldM)
+import Control.Monad
+  ( foldM
+  , void
+  )
 
 import Types.Rule
   ( Rule(..)
@@ -56,6 +59,9 @@ applyActionElement
 sendPacket :: SerialPort -> Packet -> IO (Int)
 sendPacket serial packet = sendRawPacket serial (Packet.toRaw packet)
 
+sendPacket_ :: SerialPort -> Packet -> IO ()
+sendPacket_ serial packet = void $ sendRawPacket serial (Packet.toRaw packet)
+
 runActionElement :: SerialPort -> State -> ActionElement -> IO (State)
 runActionElement
   serial
@@ -76,20 +82,17 @@ runActionElement
       , commandID = cmd
       , payload = v
       }
-  _ <- sendPacket serial packet
+  sendPacket_ serial packet
   let state' = applyActionElement state ae
   return state'
 
 runAction :: SerialPort -> State -> Action -> IO (State)
 runAction serial = foldM (runActionElement serial)
 
-runRule :: SerialPort -> State -> Rule -> IO (State)
-runRule
+runRules :: SerialPort -> State -> Rules -> IO (State)
+runRules
   serial
   state
-  Rule { trigger = trg, action = act }
-  | checkTrigger state trg = runAction serial state act
-  | otherwise = return state
-
-runRules :: SerialPort -> State -> Rules -> IO (State)
-runRules serial = foldM (runRule serial)
+  = foldM (runAction serial) state
+  . map action
+  . filter (checkTrigger state . trigger)

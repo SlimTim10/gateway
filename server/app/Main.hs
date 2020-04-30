@@ -58,35 +58,7 @@ serialLoop s = do
   serialLoop s
 
 triggeredRules :: State -> Rules -> Rules
-triggeredRules state = filter (triggeredRule state)
-
-triggeredRule :: State -> Rule -> Bool
-triggeredRule state (Rule { trigger = t }) = checkTrigger state t
-
-dev2 :: IO ()
-dev2 = do
-  result <- Config.readConfig "test/data/config.yaml"
-  case result of
-    Left err -> print err
-    Right config -> do
-      let state = State.fromConfig (Config.props config)
-      case Rules.fromConfig state (Config.rules config) of
-        Left err -> print err
-        Right rules -> do
-          putStr "Before: "
-          print $ triggeredRules state rules
-          let
-            readCards =
-              [ Rule.ActionElement { propKey = 1, value = Prop.Int 1 }
-              , Rule.ActionElement { propKey = 2, value = Prop.Int 2 }
-              ]
-          let state' = applyAction state readCards
-          putStr "After: "
-          let tRules = triggeredRules state' rules
-          print tRules
-          putStrLn "New state: "
-          let state'' = applyAction state' (Rule.action . head $ tRules)
-          pPrint state''
+triggeredRules state = filter (checkTrigger state . trigger)
 
 dev :: IO ()
 dev = do
