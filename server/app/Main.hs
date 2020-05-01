@@ -62,7 +62,9 @@ triggeredRules state = filter (checkTrigger state . trigger)
 
 dev :: IO ()
 dev = do
-  serial <- openSerial "COM19" defaultSerialSettings { commSpeed = CS115200 }
+  let port = "COM19"
+  let baud = CS115200
+  serial <- openSerial port defaultSerialSettings { commSpeed = baud }
   delaySeconds 3
   result <- Config.readConfig "test/data/config.yaml"
   case result of
