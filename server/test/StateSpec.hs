@@ -5,13 +5,9 @@ import State
 
 import qualified Data.IntMap.Strict as IntMap
 
-import Types.Prop
-  ( Prop(..)
-  )
+import Types.Prop (Prop(..))
 import qualified Types.Prop as Prop
-import Config
-  ( ConfigProp(..)
-  )
+import Config.Prop (ConfigProp(..))
 
 spec :: Spec
 spec = do

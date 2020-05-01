@@ -14,11 +14,9 @@ import Types.Rule (Rule(..))
 import Types.Rule.Trigger (TriggerElement(..))
 import Types.Rule.Action (ActionElement(..))
 import qualified Types.Rule as Rule
-import Config
-  ( ConfigRule(..)
-  , ConfigTriggerElement(..)
-  , ConfigActionElement(..)
-  )
+import Config.Rule (ConfigRule(..))
+import Config.Rule.Trigger (ConfigTriggerElement(..))
+import Config.Rule.Action (ConfigActionElement(..))
 
 spec :: Spec
 spec = do

@@ -2,6 +2,10 @@ module ConfigSpec (spec) where
 
 import Test.Hspec
 import Config
+import Config.Prop
+import Config.Rule
+import Config.Rule.Trigger
+import Config.Rule.Action
 
 import Data.Yaml (decodeEither', ParseException)
 import Data.Either (isRight, isLeft, fromRight)

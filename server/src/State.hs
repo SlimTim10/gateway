@@ -13,8 +13,8 @@ import Data.IntMap.Strict
 import qualified Data.IntMap.Strict as IntMap
 
 import Types.Prop (Prop(..))
-import qualified Types.Prop as Prop
-import Config (ConfigProp(..))
+import Config.Prop (ConfigProp)
+import qualified Config.Prop as CP
 
 type State = IntMap Prop
 
@@ -26,9 +26,9 @@ fromConfig cProps = IntMap.fromAscList lst
 
 fromConfigProp :: ConfigProp -> Prop
 fromConfigProp cProp = Prop
-  { name = (name :: ConfigProp -> Prop.Name) cProp
-  , description = (description :: ConfigProp -> Prop.Description) cProp
-  , address = (address :: ConfigProp -> Prop.Address) cProp
-  , defaultValue = (defaultValue :: ConfigProp -> Prop.Value) cProp
-  , value = (defaultValue :: ConfigProp -> Prop.Value) cProp
+  { name = CP.name cProp
+  , description = CP.description cProp
+  , address = CP.address cProp
+  , defaultValue = CP.defaultValue cProp
+  , value = CP.defaultValue cProp
   }

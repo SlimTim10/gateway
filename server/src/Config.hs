@@ -1,12 +1,6 @@
 module Config
   ( Config(..)
   , readConfig
-  , ConfigProp(..)
-  , ConfigRule(..)
-  , ConfigTriggerElement(..)
-  , ConfigTrigger
-  , ConfigActionElement(..)
-  , ConfigAction
   -- , validate
   ) where
 
@@ -18,16 +12,8 @@ import Data.Yaml
   , ParseException
   )
 
-import Config.Prop (ConfigProp(..))
-import Config.Rule (ConfigRule(..))
-import Config.Rule.Trigger
-  ( ConfigTrigger
-  , ConfigTriggerElement(..)
-  )
-import Config.Rule.Action
-  ( ConfigAction
-  , ConfigActionElement(..)
-  )
+import Config.Prop (ConfigProp)
+import Config.Rule (ConfigRule)
 
 data Config
   = Config
