@@ -14,7 +14,8 @@ import Data.Aeson
 import Data.Text (Text)
 import Data.Char (toLower)
 
-import qualified Types.Prop as Prop
+import Types.Rule.Trigger (Trigger)
+import Types.Rule.Action (Action)
 
 data Type = Basic | Sequence
   deriving (Show, Eq, Generic, ToJSON)
@@ -23,21 +24,6 @@ instance FromJSON Type where
   parseJSON = genericParseJSON $ defaultOptions { constructorTagModifier = map toLower }
 
 type Description = Maybe Text
-
-data TriggerElement = TriggerElement
-  { propKey :: Int
-  , value :: Prop.Value
-  }
-  deriving (Show, Eq)
-
-data ActionElement = ActionElement
-  { propKey :: Int
-  , value :: Prop.Value
-  }
-  deriving (Show, Eq)
-
-type Trigger = [TriggerElement]
-type Action = [ActionElement]
 
 data Rule = Rule
   { type_ :: Type

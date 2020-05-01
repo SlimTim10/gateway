@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a7b761f58b298f48cd6d5cc0f37ccb62deb97c5b86b4b9bd535dfc4895a7ddec
+-- hash: 997fd6eb6709b2ddbbce1fc0dc44e15074e67c56bfdff2a0efd613954fd2d88a
 
 name:           server
 version:        0.1.0.0
@@ -30,6 +30,8 @@ library
       Config
       Config.Prop
       Config.Rule
+      Config.Rule.Action
+      Config.Rule.Trigger
       Encoding
       Lib
       Packet
@@ -39,6 +41,8 @@ library
       State
       Types.Prop
       Types.Rule
+      Types.Rule.Action
+      Types.Rule.Trigger
   other-modules:
       Paths_server
   hs-source-dirs:

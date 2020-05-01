@@ -9,12 +9,16 @@ import Data.List (find)
 import State (State)
 import Types.Rule
   ( Rule(..)
-  , TriggerElement(..)
-  , Trigger
-  , ActionElement(..)
-  , Action
   )
 import qualified Types.Rule as Rule
+import Types.Rule.Trigger
+  ( Trigger
+  , TriggerElement(..)
+  )
+import Types.Rule.Action
+  ( Action
+  , ActionElement(..)
+  )
 import qualified Types.Prop as Prop
 import Config
   ( ConfigRule(..)

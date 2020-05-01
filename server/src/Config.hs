@@ -19,12 +19,14 @@ import Data.Yaml
   )
 
 import Config.Prop (ConfigProp(..))
-import Config.Rule
-  ( ConfigRule(..)
+import Config.Rule (ConfigRule(..))
+import Config.Rule.Trigger
+  ( ConfigTrigger
   , ConfigTriggerElement(..)
-  , ConfigTrigger
+  )
+import Config.Rule.Action
+  ( ConfigAction
   , ConfigActionElement(..)
-  , ConfigAction
   )
 
 data Config

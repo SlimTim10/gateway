@@ -12,12 +12,14 @@ import Control.Monad
   , void
   )
 
-import Types.Rule
-  ( Rule(..)
+import Types.Rule (Rule(..))
+import Types.Rule.Trigger
+  ( Trigger
   , TriggerElement(..)
-  , Trigger
+  )
+import Types.Rule.Action
+  ( Action
   , ActionElement(..)
-  , Action
   )
 import State
   ( State

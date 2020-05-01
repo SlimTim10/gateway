@@ -10,11 +10,9 @@ import Types.Prop
   ( Prop(..)
   )
 import qualified Types.Prop as Prop
-import Types.Rule
-  ( Rule(..)
-  , TriggerElement(..)
-  , ActionElement(..)
-  )
+import Types.Rule (Rule(..))
+import Types.Rule.Trigger (TriggerElement(..))
+import Types.Rule.Action (ActionElement(..))
 import qualified Types.Rule as Rule
 import Config
   ( ConfigRule(..)

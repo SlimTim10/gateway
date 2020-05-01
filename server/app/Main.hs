@@ -10,7 +10,7 @@ import System.Hardware.Serialport
   )
 import Control.Concurrent (threadDelay)
 import Options.Applicative (execParser)
-import Text.Pretty.Simple (pPrint)
+-- import Text.Pretty.Simple (pPrint)
 
 import Options
   ( options
@@ -20,7 +20,7 @@ import Packet (fromRaw)
 import ReliableSerial (recvRawPacket)
 import qualified Types.Prop as Prop
 import Types.Rule (Rule(..))
-import qualified Types.Rule as Rule
+import Types.Rule.Action (ActionElement(..))
 import qualified Config
 import State (State)
 import Server
@@ -78,8 +78,8 @@ dev = do
           print $ triggeredRules state rules
           let
             readCards =
-              [ Rule.ActionElement { propKey = 1, value = Prop.Int 1 }
-              , Rule.ActionElement { propKey = 2, value = Prop.Int 2 }
+              [ ActionElement { propKey = 1, value = Prop.Int 1 }
+              , ActionElement { propKey = 2, value = Prop.Int 2 }
               ]
           let state' = applyAction state readCards
           putStr "After: "
@@ -87,4 +87,4 @@ dev = do
           print tRules
           putStrLn "New state: "
           state'' <- runRules serial state' rules
-          pPrint state''
+          print state''
