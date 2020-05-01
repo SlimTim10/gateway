@@ -5,11 +5,10 @@ module Rules
 
 import qualified Data.IntMap.Strict as IntMap
 import Data.List (find)
+import Control.Exception (throwIO)
 
 import State (State)
-import Types.Rule
-  ( Rule(..)
-  )
+import Types.Rule (Rule(..))
 import Types.Rule.Trigger
   ( Trigger
   , TriggerElement(..)
@@ -31,13 +30,17 @@ import Config.Rule.Action
   , ConfigActionElement
   )
 import qualified Config.Rule.Action as CA
+import Config (ConfigException(..))
 
 type Rules = [Rule]
 
-fromConfig :: State -> [ConfigRule] -> Either String Rules
+fromConfigThrow :: State -> [ConfigRule] -> IO Rules
+fromConfigThrow state config = either throwIO return $ fromConfig state config
+
+fromConfig :: State -> [ConfigRule] -> Either ConfigException Rules
 fromConfig state config = mapM (fromConfigRule state) config
 
-fromConfigRule :: State -> ConfigRule -> Either String Rule
+fromConfigRule :: State -> ConfigRule -> Either ConfigException Rule
 fromConfigRule state cRule = do
   trg <- fromConfigTrigger state (CR.trigger cRule)
   act <- fromConfigAction state (CR.action cRule)
@@ -49,28 +52,28 @@ fromConfigRule state cRule = do
     , action = act
     }
 
-fromConfigTrigger :: State -> ConfigTrigger -> Either String Trigger
+fromConfigTrigger :: State -> ConfigTrigger -> Either ConfigException Trigger
 fromConfigTrigger state = mapM (fromConfigTriggerElement state)
 
-fromConfigTriggerElement :: State -> ConfigTriggerElement -> Either String TriggerElement
+fromConfigTriggerElement :: State -> ConfigTriggerElement -> Either ConfigException TriggerElement
 fromConfigTriggerElement state cTrigger = do
   let f = \(_, prop) -> Prop.name prop == CT.name cTrigger
   case find f (IntMap.assocs state) of
-    Nothing -> Left $ "Invalid trigger: " ++ show cTrigger
+    Nothing -> Left $ InvalidTrigger $ show cTrigger
     Just (key, _) -> Right
       TriggerElement
       { propKey = key
       , value = CT.value cTrigger
       }
 
-fromConfigAction :: State -> ConfigAction -> Either String Action
+fromConfigAction :: State -> ConfigAction -> Either ConfigException Action
 fromConfigAction state = mapM (fromConfigActionElement state)
 
-fromConfigActionElement :: State -> ConfigActionElement -> Either String ActionElement
+fromConfigActionElement :: State -> ConfigActionElement -> Either ConfigException ActionElement
 fromConfigActionElement state cAction = do
   let f = \(_, prop) -> Prop.name prop == CA.name cAction
   case find f (IntMap.assocs state) of
-    Nothing -> Left $ "Invalid action: " ++ show cAction
+    Nothing -> Left $ InvalidAction $ show cAction
     Just (key, _) -> Right
       ActionElement
       { propKey = key

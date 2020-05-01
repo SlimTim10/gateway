@@ -1,5 +1,6 @@
 module Config
   ( Config(..)
+  , ConfigException(..)
   , readConfig
   -- , validate
   ) where
@@ -8,9 +9,9 @@ import GHC.Generics (Generic)
 import Data.Yaml
   ( FromJSON
   , ToJSON
-  , decodeFileEither
-  , ParseException
+  , decodeFileThrow
   )
+import Control.Exception (Exception)
 
 import Config.Prop (ConfigProp)
 import Config.Rule (ConfigRule)
@@ -22,8 +23,13 @@ data Config
   }
   deriving (Show, Eq, Generic, ToJSON, FromJSON)
 
-readConfig :: FilePath -> IO (Either ParseException Config)
-readConfig = decodeFileEither
+data ConfigException
+  = InvalidTrigger String
+  | InvalidAction String
+  deriving (Show, Exception)
+
+readConfig :: FilePath -> IO Config
+readConfig = decodeFileThrow
 
 -- validate :: Config -> Either String Config
 -- validate = undefined

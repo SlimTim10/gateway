@@ -10,7 +10,7 @@ import System.Hardware.Serialport
   )
 import Control.Concurrent (threadDelay)
 import Options.Applicative (execParser)
--- import Text.Pretty.Simple (pPrint)
+import Text.Pretty.Simple (pPrint)
 
 import Options
   ( options
@@ -65,26 +65,21 @@ dev = do
   let port = "COM19"
   let baud = CS115200
   serial <- openSerial port defaultSerialSettings { commSpeed = baud }
+  config <- Config.readConfig "test/data/config.yaml"
   delaySeconds 3
-  result <- Config.readConfig "test/data/config.yaml"
-  case result of
-    Left err -> print err
-    Right config -> do
-      let state = State.fromConfig (Config.props config)
-      case Rules.fromConfig state (Config.rules config) of
-        Left err -> print err
-        Right rules -> do
-          putStr "Before: "
-          print $ triggeredRules state rules
-          let
-            readCards =
-              [ ActionElement { propKey = 1, value = Prop.Int 1 }
-              , ActionElement { propKey = 2, value = Prop.Int 2 }
-              ]
-          let state' = applyAction state readCards
-          putStr "After: "
-          let tRules = triggeredRules state' rules
-          print tRules
-          putStrLn "New state: "
-          state'' <- runRules serial state' rules
-          print state''
+  let state = State.fromConfig (Config.props config)
+  rules <- Rules.fromConfigThrow state (Config.rules config)
+  putStr "Before: "
+  print $ triggeredRules state rules
+  let
+    readCards =
+      [ ActionElement { propKey = 1, value = Prop.Int 1 }
+      , ActionElement { propKey = 2, value = Prop.Int 2 }
+      ]
+  let state' = applyAction state readCards
+  putStr "After: "
+  let tRules = triggeredRules state' rules
+  print tRules
+  putStrLn "New state: "
+  state'' <- runRules serial state' rules
+  pPrint state''
