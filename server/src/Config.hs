@@ -1,8 +1,7 @@
 module Config
   ( Config(..)
   , ConfigException(..)
-  , readConfig
-  -- , validate
+  , readConfigThrow
   ) where
 
 import GHC.Generics (Generic)
@@ -26,22 +25,8 @@ data Config
 data ConfigException
   = InvalidTrigger String
   | InvalidAction String
+  | PropConflict String [[ConfigProp]]
   deriving (Show, Exception)
 
-readConfig :: FilePath -> IO Config
-readConfig = decodeFileThrow
-
--- validate :: Config -> Either String Config
--- validate = undefined
-
--- uniquePropNames :: Config -> Either String Config
--- uniquePropNames = undefined
-
--- uniquePropAddresses :: Config -> Either String Config
--- uniquePropAddresses = undefined
-
--- noRedundantTriggers :: Config -> Either String Config
--- noRedundantTriggers = undefined
-
--- validPropNamesInTriggers :: Config -> Either String Config
--- validPropNamesInTriggers = undefined
+readConfigThrow :: FilePath -> IO Config
+readConfigThrow = decodeFileThrow

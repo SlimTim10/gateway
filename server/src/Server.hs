@@ -3,6 +3,7 @@ module Server
   , applyAction
   , sendPacket
   , runRules
+  , handleRawPacket
   ) where
 
 import Data.List (foldl')
@@ -27,7 +28,10 @@ import State
   )
 import Types.Prop (Prop(..))
 import qualified Types.Prop as Prop
-import Packet (Packet(..))
+import Packet
+  ( Packet(..)
+  , RawPacket
+  )
 import qualified Packet
 import ReliableSerial (sendRawPacket)
 import qualified Command as Cmd
@@ -40,9 +44,9 @@ checkTrigger state = all (checkTriggerElement state)
 checkTriggerElement :: State -> TriggerElement -> Bool
 checkTriggerElement
   state
-  TriggerElement { propKey = key, value = tv }
+  TriggerElement { address = addr, value = tv }
   =
-  case state !? key of
+  case state !? addr of
     Nothing -> False
     Just prop -> Prop.value prop == tv
 
@@ -52,11 +56,27 @@ applyAction = foldl' applyActionElement
 applyActionElement :: State -> ActionElement -> State
 applyActionElement
   state
-  ActionElement { propKey = key, value = av }
+  ActionElement { address = addr, value = av }
   =
-  State.update f key state
+  State.update f addr state
   where
     f prop = Just $ (prop :: Prop) { value = av }
+
+handleRawPacket :: State -> RawPacket -> State
+handleRawPacket state raw = case Packet.fromRaw raw of
+  Left e -> error $ "Invalid packet: " ++ e
+  Right packet -> handlePacket state packet
+
+handlePacket :: State -> Packet -> State
+handlePacket
+  state
+  Packet { propAddress = addr, commandID = cmd, payload }
+  =
+  case cmd of
+    Cmd.Ping -> error "Not yet supported"
+    _ -> State.update f (fromIntegral addr) state
+  where
+    f prop = Just $ (prop :: Prop) { value = payload }
 
 sendPacket :: SerialPort -> Packet -> IO (Int)
 sendPacket serial packet = sendRawPacket serial (Packet.toRaw packet)
@@ -68,7 +88,7 @@ runActionElement :: SerialPort -> State -> ActionElement -> IO (State)
 runActionElement
   serial
   state
-  ae@(ActionElement { propKey = key, value = v })
+  ae@(ActionElement { address = addr', value = v })
   = do
   let
     cmd = case v of
@@ -76,9 +96,9 @@ runActionElement
       Prop.IntList _ -> Cmd.PayloadIntList
       Prop.String _ -> Cmd.PayloadString
       _ -> error "Invalid value in action"
-    addr = case state !? key of
-      Just p -> address p
-      Nothing -> error "Invalid prop key in action"
+    addr = case state !? addr' of
+      Just p -> Prop.address p
+      Nothing -> error "Invalid prop address in action"
     packet = Packet
       { propAddress = addr
       , commandID = cmd

@@ -4,7 +4,6 @@ import Test.Hspec
 import Rules
 
 import qualified Data.IntMap.Strict as IntMap
-import Data.Either (isRight, fromRight)
 
 import Types.Prop
   ( Prop(..)
@@ -20,7 +19,7 @@ import Config.Rule.Action (ConfigActionElement(..))
 
 spec :: Spec
 spec = do
-  describe "FromConfig" $ do
+  describe "FromConfigThrow" $ do
     it "builds rules out of a configuration" $ do
       let
         state =
@@ -52,7 +51,7 @@ spec = do
               , value = Prop.Int 0
               }
             )
-          , ( 4
+          , ( 0x10
             , Prop
               { name = "South Door"
               , description = Just "Enter the next room"
@@ -61,7 +60,7 @@ spec = do
               , value = Prop.String "closed"
               }
             )
-          , ( 5
+          , ( 0x20
             , Prop
               { name = "Big Lockbox"
               , description = Just "Holds card 4"
@@ -70,7 +69,7 @@ spec = do
               , value = Prop.String "locked"
               }
             )
-          , ( 6
+          , ( 0x30
             , Prop
               { name = "Small Lockbox 1"
               , description = Just "Holds card 2"
@@ -79,7 +78,7 @@ spec = do
               , value = Prop.String "locked"
               }
             )
-          , ( 7
+          , ( 0x31
             , Prop
               { name = "Small Lockbox 2"
               , description = Just "Holds the hint to the piano chord"
@@ -88,7 +87,7 @@ spec = do
               , value = Prop.String "locked"
               }
             )
-          , ( 8
+          , ( 0x40
             , Prop
               { name = "Button Puzzle"
               , description = Nothing
@@ -97,7 +96,7 @@ spec = do
               , value = Prop.Int 0
               }
             )
-          , ( 9
+          , ( 0x50
             , Prop
               { name = "Mini Piano"
               , description = Nothing
@@ -106,7 +105,7 @@ spec = do
               , value = Prop.IntList [0,0,0,0,0,0,0,0,0,0,0,0,0]
               }
             )
-          , ( 10
+          , ( 0x60
             , Prop
               { name = "East Door"
               , description = Just "Exit the escape room"
@@ -172,62 +171,60 @@ spec = do
               ]
             }
           ]
-      let result = fromConfig state crules
-      result `shouldSatisfy` isRight
-      let rules = fromRight [] result
+      rules <- fromConfigThrow state crules
       rules `shouldBe`
         [ Rule
           { type_ = Rule.Basic
           , description = Just "First puzzle. Open the South door to get to the next room"
           , trigger =
-            [ TriggerElement { propKey = 1, value = Prop.Int 3 }
+            [ TriggerElement { address = 1, value = Prop.Int 3 }
             ]
           , action =
-            [ ActionElement { propKey = 4, value = Prop.String "open" }
+            [ ActionElement { address = 0x10, value = Prop.String "open" }
             ]
           }
         , Rule
           { type_ = Rule.Sequence
           , description = Just "Get card 4 from the big lockbox"
           , trigger =
-            [ TriggerElement { propKey = 8, value = Prop.Int 1 }
-            , TriggerElement { propKey = 8, value = Prop.Int 2 }
-            , TriggerElement { propKey = 8, value = Prop.Int 3 }
-            , TriggerElement { propKey = 8, value = Prop.Int 4 }
+            [ TriggerElement { address = 0x40, value = Prop.Int 1 }
+            , TriggerElement { address = 0x40, value = Prop.Int 2 }
+            , TriggerElement { address = 0x40, value = Prop.Int 3 }
+            , TriggerElement { address = 0x40, value = Prop.Int 4 }
             ]
           , action =
-            [ ActionElement { propKey = 5, value = Prop.String "unlocked" }
+            [ ActionElement { address = 0x20, value = Prop.String "unlocked" }
             ]
           }
         , Rule
           { type_ = Rule.Basic
           , description = Just "Get card 2 from the first small lockbox"
           , trigger =
-            [ TriggerElement { propKey = 1, value = Prop.Int 4 }
+            [ TriggerElement { address = 1, value = Prop.Int 4 }
             ]
           , action =
-            [ ActionElement { propKey = 6, value = Prop.String "unlocked" }
+            [ ActionElement { address = 0x30, value = Prop.String "unlocked" }
             ]
           }
         , Rule
           { type_ = Rule.Basic
           , description = Just "Get the piano chord from the second small lockbox"
           , trigger =
-            [ TriggerElement { propKey = 1, value = Prop.Int 1 }
-            , TriggerElement { propKey = 2, value = Prop.Int 2 }
+            [ TriggerElement { address = 1, value = Prop.Int 1 }
+            , TriggerElement { address = 2, value = Prop.Int 2 }
             ]
           , action =
-            [ ActionElement { propKey = 7, value = Prop.String "unlocked" }
+            [ ActionElement { address = 0x31, value = Prop.String "unlocked" }
             ]
           }
         , Rule
           { type_ = Rule.Basic
           , description = Just "Play the right chord to get out!"
           , trigger =
-            [ TriggerElement { propKey = 9, value = Prop.IntList [1,0,0,0,1,0,0,1,0,0,0,0,0] }
+            [ TriggerElement { address = 0x50, value = Prop.IntList [1,0,0,0,1,0,0,1,0,0,0,0,0] }
             ]
           , action =
-            [ ActionElement { propKey = 10, value = Prop.String "open" }
+            [ ActionElement { address = 0x60, value = Prop.String "open" }
             ]
           }
         ]

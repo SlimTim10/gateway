@@ -5,7 +5,11 @@ import qualified Types.Prop as Prop
 type Trigger = [TriggerElement]
 
 data TriggerElement = TriggerElement
-  { propKey :: Int
+  { address :: Prop.Address
   , value :: Prop.Value
   }
-  deriving (Show, Eq)
+  deriving (Eq)
+
+instance Show TriggerElement where
+  show TriggerElement {address, value}
+    = "prop " ++ show address ++ " = " ++ show value

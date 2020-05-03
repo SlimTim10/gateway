@@ -10,7 +10,7 @@ import System.Hardware.Serialport
   )
 import Control.Concurrent (threadDelay)
 import Options.Applicative (execParser)
-import Text.Pretty.Simple (pPrint)
+-- import Text.Pretty.Simple (pPrint)
 
 import Options
   ( options
@@ -65,21 +65,34 @@ dev = do
   let port = "COM19"
   let baud = CS115200
   serial <- openSerial port defaultSerialSettings { commSpeed = baud }
-  config <- Config.readConfig "test/data/config.yaml"
-  delaySeconds 3
-  let state = State.fromConfig (Config.props config)
+  config <- Config.readConfigThrow "test/data/config.yaml"
+  delaySeconds 1
+  state <- State.fromConfigThrow (Config.props config)
   rules <- Rules.fromConfigThrow state (Config.rules config)
-  putStr "Before: "
+  putStr "Triggered rules: "
   print $ triggeredRules state rules
-  let
-    readCards =
-      [ ActionElement { propKey = 1, value = Prop.Int 1 }
-      , ActionElement { propKey = 2, value = Prop.Int 2 }
-      ]
-  let state' = applyAction state readCards
-  putStr "After: "
+  putStrLn ""
+  putStrLn "Reading cards..."
+  putStrLn ""
+  state' <- simulate state
+  putStr "Triggered rules: "
   let tRules = triggeredRules state' rules
   print tRules
+  putStrLn ""
   putStrLn "New state: "
   state'' <- runRules serial state' rules
-  pPrint state''
+  print state''
+  where
+    simulate state = do
+      let
+        readCards =
+          [ ActionElement { address = 1, value = Prop.Int 1 }
+          , ActionElement { address = 2, value = Prop.Int 2 }
+          ]
+      return $ applyAction state readCards
+    -- simulate state = do
+    --   let bs = B.pack . map chr $ [0x00, 0x00, 0x00, 0x01, 0x01, 0x01]
+    --   -- let raw = [0x00, 0x00, 0x00, 0x02, 0x01, 0x02]
+    --   case fromRaw bs of
+    --     Left x -> error "Invalid packet"
+    --     Right packet -> 

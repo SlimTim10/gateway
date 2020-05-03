@@ -30,7 +30,7 @@ import qualified Types.Prop as Prop
 type RawPacket = B.ByteString
 
 data Packet = Packet
-  { propAddress :: Word32
+  { propAddress :: Int
   , commandID :: Command
   , payload :: Prop.Value
   }
@@ -103,7 +103,7 @@ fromRaw raw
         , payload = pld
         }
   where
-    addr = getWord32 . slice addrIdx addrSize $ raw
+    addr = fromIntegral . getWord32 . slice addrIdx addrSize $ raw
     rawCmd = getWord8 . slice cmdIdx cmdSize $ raw
     rawPayload = slice pldIdx pldSize raw
     addrIdx = index . (propAddress :: PacketFormat -> Format) $ packetFormat
@@ -122,7 +122,7 @@ toRaw
   }
   = B.concat
   $
-  [ toStrictByteString . word32BE $ addr
+  [ toStrictByteString . word32BE . fromIntegral $ addr
   , toStrictByteString . word8 . Cmd.toInt $ cmd
   , Prop.rawValue pld
   ]

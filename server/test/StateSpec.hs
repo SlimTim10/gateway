@@ -11,7 +11,7 @@ import Config.Prop (ConfigProp(..))
 
 spec :: Spec
 spec = do
-  describe "fromConfig" $ do
+  describe "fromConfigThrow" $ do
     it "builds state out of props configuration" $ do
       let
         cprops =
@@ -76,7 +76,7 @@ spec = do
             , defaultValue = Prop.String "closed"
             }
           ]
-      let state = fromConfig cprops
+      state <- fromConfigThrow cprops
       state `shouldBe`
         IntMap.fromAscList
         [ ( 1
@@ -106,7 +106,7 @@ spec = do
             , value = Prop.Int 0
             }
           )
-        , ( 4
+        , ( 0x10
           , Prop
             { name = "South Door"
             , description = Just "Enter the next room"
@@ -115,7 +115,7 @@ spec = do
             , value = Prop.String "closed"
             }
           )
-        , ( 5
+        , ( 0x20
           , Prop
             { name = "Big Lockbox"
             , description = Just "Holds card 4"
@@ -124,7 +124,7 @@ spec = do
             , value = Prop.String "locked"
             }
           )
-        , ( 6
+        , ( 0x30
           , Prop
             { name = "Small Lockbox 1"
             , description = Just "Holds card 2"
@@ -133,7 +133,7 @@ spec = do
             , value = Prop.String "locked"
             }
           )
-        , ( 7
+        , ( 0x31
           , Prop
             { name = "Small Lockbox 2"
             , description = Just "Holds the hint to the piano chord"
@@ -142,7 +142,7 @@ spec = do
             , value = Prop.String "locked"
             }
           )
-        , ( 8
+        , ( 0x40
           , Prop
             { name = "Button Puzzle"
             , description = Nothing
@@ -151,7 +151,7 @@ spec = do
             , value = Prop.Int 0
             }
           )
-        , ( 9
+        , ( 0x50
           , Prop
             { name = "Mini Piano"
             , description = Nothing
@@ -160,7 +160,7 @@ spec = do
             , value = Prop.IntList [0,0,0,0,0,0,0,0,0,0,0,0,0]
             }
           )
-        , ( 10
+        , ( 0x60
           , Prop
             { name = "East Door"
             , description = Just "Exit the escape room"

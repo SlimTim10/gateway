@@ -29,12 +29,6 @@ emptyRule = ConfigRule
   , action = []
   }
 
-emptyConfig :: Config
-emptyConfig = Config
-  { props = []
-  , rules = []
-  }
-
 spec :: Spec
 spec = do
   describe "FromJSON ConfigProp" $ do
@@ -269,11 +263,9 @@ spec = do
           ]
         }
 
-  describe "readConfig" $ do
+  describe "readConfigThrow" $ do
     it "parses an entire config file in YAML" $ do
-      result <- readConfig "test/data/config.yaml"
-      result `shouldSatisfy` isRight
-      let config = fromRight emptyConfig result
+      config <- readConfigThrow "test/data/config.yaml"
       config `shouldBe`
         Config
         { props =

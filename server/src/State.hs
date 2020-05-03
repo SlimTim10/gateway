@@ -2,6 +2,7 @@ module State
   ( State
   , (!?)
   , fromConfig
+  , fromConfigThrow
   , update
   ) where
 
@@ -11,18 +12,38 @@ import Data.IntMap.Strict
   , update
   )
 import qualified Data.IntMap.Strict as IntMap
+import Data.List
+  ( sortOn
+  , groupBy
+  )
+import Control.Exception (throwIO)
 
 import Types.Prop (Prop(..))
 import Config.Prop (ConfigProp)
 import qualified Config.Prop as CP
+import Config (ConfigException(..))
 
 type State = IntMap Prop
 
-fromConfig :: [ConfigProp] -> State
-fromConfig cProps = IntMap.fromAscList lst
+fromConfigThrow :: [ConfigProp] -> IO State
+fromConfigThrow cProps = either throwIO return $ fromConfig cProps
+
+fromConfig :: [ConfigProp] -> Either ConfigException State
+fromConfig cProps
+  | not . null $ addressConflicts = Left $ PropConflict "duplicate addresses" addressConflicts
+  | not . null $ nameConflicts = Left $ PropConflict "duplicate names" nameConflicts
+  | otherwise = Right $ IntMap.fromList (zip as ps)
   where
+    addressConflicts = conflicts CP.address cProps
+    nameConflicts = conflicts CP.name cProps
     ps = map fromConfigProp cProps
-    lst = zip [1..] ps
+    as = map address ps
+
+conflicts :: (Ord a) => (ConfigProp -> a) -> [ConfigProp] -> [[ConfigProp]]
+conflicts f
+  = filter ((> 1) . length)
+  . groupBy (\x y -> f x == f y)
+  . sortOn f
 
 fromConfigProp :: ConfigProp -> Prop
 fromConfigProp cProp = Prop

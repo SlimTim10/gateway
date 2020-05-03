@@ -5,7 +5,11 @@ import qualified Types.Prop as Prop
 type Action = [ActionElement]
 
 data ActionElement = ActionElement
-  { propKey :: Int
+  { address :: Prop.Address
   , value :: Prop.Value
   }
-  deriving (Show, Eq)
+  deriving (Eq)
+
+instance Show ActionElement where
+  show ActionElement {address, value}
+    = "prop " ++ show address ++ " = " ++ show value

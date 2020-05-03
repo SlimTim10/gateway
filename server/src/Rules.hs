@@ -35,10 +35,10 @@ import Config (ConfigException(..))
 type Rules = [Rule]
 
 fromConfigThrow :: State -> [ConfigRule] -> IO Rules
-fromConfigThrow state config = either throwIO return $ fromConfig state config
+fromConfigThrow state cRules = either throwIO return $ fromConfig state cRules
 
 fromConfig :: State -> [ConfigRule] -> Either ConfigException Rules
-fromConfig state config = mapM (fromConfigRule state) config
+fromConfig state cRules = mapM (fromConfigRule state) cRules
 
 fromConfigRule :: State -> ConfigRule -> Either ConfigException Rule
 fromConfigRule state cRule = do
@@ -60,9 +60,9 @@ fromConfigTriggerElement state cTrigger = do
   let f = \(_, prop) -> Prop.name prop == CT.name cTrigger
   case find f (IntMap.assocs state) of
     Nothing -> Left $ InvalidTrigger $ show cTrigger
-    Just (key, _) -> Right
+    Just (addr, _) -> Right
       TriggerElement
-      { propKey = key
+      { address = addr
       , value = CT.value cTrigger
       }
 
@@ -74,8 +74,8 @@ fromConfigActionElement state cAction = do
   let f = \(_, prop) -> Prop.name prop == CA.name cAction
   case find f (IntMap.assocs state) of
     Nothing -> Left $ InvalidAction $ show cAction
-    Just (key, _) -> Right
+    Just (addr, _) -> Right
       ActionElement
-      { propKey = key
+      { address = addr
       , value = CA.value cAction
       }
