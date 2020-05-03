@@ -14,13 +14,13 @@ data Command
   | Ping
   deriving (Show, Eq, Generic, ToJSON, FromJSON)
 
-fromInt :: Word8 -> Either String Command
+fromInt :: Word8 -> Maybe Command
 fromInt x = case x of
-  0x01 -> Right PayloadInt
-  0x02 -> Right PayloadIntList
-  0x03 -> Right PayloadString
-  0x80 -> Right Ping
-  _ -> Left "Invalid command ID"
+  0x01 -> Just PayloadInt
+  0x02 -> Just PayloadIntList
+  0x03 -> Just PayloadString
+  0x80 -> Just Ping
+  _ -> Nothing
 
 toInt :: Command -> Word8
 toInt cmd = case cmd of

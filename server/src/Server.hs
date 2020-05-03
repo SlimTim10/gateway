@@ -4,6 +4,7 @@ module Server
   , sendPacket
   , runRules
   , handleRawPacket
+  , handlePacket
   ) where
 
 import Data.List (foldl')
@@ -11,6 +12,11 @@ import System.Hardware.Serialport (SerialPort)
 import Control.Monad
   ( foldM
   , void
+  )
+import Control.Monad.IO.Class (MonadIO)
+import Control.Exception
+  ( Exception
+  , throw
   )
 
 import Types.Rule (Rule(..))
@@ -31,6 +37,7 @@ import qualified Types.Prop as Prop
 import Packet
   ( Packet(..)
   , RawPacket
+  , PacketException(..)
   )
 import qualified Packet
 import ReliableSerial (sendRawPacket)
@@ -62,19 +69,28 @@ applyActionElement
   where
     f prop = Just $ (prop :: Prop) { value = av }
 
-handleRawPacket :: State -> RawPacket -> State
-handleRawPacket state raw = case Packet.fromRaw raw of
-  Left e -> error $ "Invalid packet: " ++ e
-  Right packet -> handlePacket state packet
+raise :: (Exception e, MonadIO m) => Either e a -> m a
+raise = either throw return
 
-handlePacket :: State -> Packet -> State
-handlePacket
+handleRawPacket :: State -> RawPacket -> IO State
+handleRawPacket state = raise . handleRawPacket' state
+
+handleRawPacket' :: State -> RawPacket -> Either PacketException State
+handleRawPacket' state raw = do
+  packet <- Packet.fromRaw raw
+  handlePacket' state packet
+
+handlePacket :: State -> Packet -> IO State
+handlePacket state = raise . handlePacket' state
+
+handlePacket' :: State -> Packet -> Either PacketException State
+handlePacket'
   state
   Packet { propAddress = addr, commandID = cmd, payload }
-  =
-  case cmd of
-    Cmd.Ping -> error "Not yet supported"
-    _ -> State.update f (fromIntegral addr) state
+  | addr `State.notMember` state = Left $ InvalidPropAddress addr
+  | otherwise = case cmd of
+      Cmd.Ping -> error "Not yet supported"
+      _ -> Right $ State.update f addr state
   where
     f prop = Just $ (prop :: Prop) { value = payload }
 

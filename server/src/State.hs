@@ -4,12 +4,14 @@ module State
   , fromConfig
   , fromConfigThrow
   , update
+  , notMember
   ) where
 
 import Data.IntMap.Strict
   ( IntMap
   , (!?)
   , update
+  , notMember
   )
 import qualified Data.IntMap.Strict as IntMap
 import Data.List

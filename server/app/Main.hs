@@ -4,29 +4,34 @@ import System.Hardware.Serialport
   ( openSerial
   , closeSerial
   , defaultSerialSettings
-  , SerialPort
+  -- , SerialPort
   , SerialPortSettings(..)
   , CommSpeed(..)
   )
 import Control.Concurrent (threadDelay)
 import Options.Applicative (execParser)
+import qualified Data.ByteString.Char8 as B
+import Data.Char (chr)
+import Control.Exception (catch)
 -- import Text.Pretty.Simple (pPrint)
 
 import Options
   ( options
   , Options(..)
   )
-import Packet (fromRaw)
-import ReliableSerial (recvRawPacket)
-import qualified Types.Prop as Prop
+-- import Packet (fromRaw)
+import Packet (PacketException)
+-- import ReliableSerial (recvRawPacket)
+-- import qualified Types.Prop as Prop
 import Types.Rule (Rule(..))
-import Types.Rule.Action (ActionElement(..))
+-- import Types.Rule.Action (ActionElement(..))
 import qualified Config
 import State (State)
 import Server
   ( checkTrigger
-  , applyAction
+  -- , applyAction
   , runRules
+  , handleRawPacket
   )
 import qualified State
 import Rules (Rules)
@@ -44,18 +49,18 @@ run :: Options -> IO ()
 run (Options port baud) = do
   s <- openSerial port defaultSerialSettings { commSpeed = baud }
   delaySeconds 3
-  serialLoop s
+  -- serialLoop s
   closeSerial s
 
-serialLoop :: SerialPort -> IO ()
-serialLoop s = do
-  eRawPacket <- recvRawPacket s
-  case eRawPacket of
-    Left e -> putStrLn $ "Error: " ++ e
-    Right rawPacket -> do
-      let p = fromRaw rawPacket
-      either putStrLn print p
-  serialLoop s
+-- serialLoop :: SerialPort -> IO ()
+-- serialLoop s = do
+--   eRawPacket <- recvRawPacket s
+--   case eRawPacket of
+--     Left e -> putStrLn $ "Error: " ++ e
+--     Right rawPacket -> do
+--       let p = fromRaw rawPacket
+--       either putStrLn print p
+--   serialLoop s
 
 triggeredRules :: State -> Rules -> Rules
 triggeredRules state = filter (checkTrigger state . trigger)
@@ -69,12 +74,22 @@ dev = do
   delaySeconds 1
   state <- State.fromConfigThrow (Config.props config)
   rules <- Rules.fromConfigThrow state (Config.rules config)
-  putStr "Triggered rules: "
+  putStr "Triggered rules: " 
   print $ triggeredRules state rules
+  
   putStrLn ""
   putStrLn "Reading cards..."
   putStrLn ""
-  state' <- simulate state
+  
+  let bs0 = B.pack . map chr $ [0x00, 0x00, 0x00, 0x01, 0x01, 0x01]
+  s1 <- handleRawPacket state bs0
+  let bs1 = B.pack . map chr $ [0x00, 0x00, 0x00, 0x02, 0x01, 0x02]
+
+  state' <- handleRawPacket s1 bs1 `catch` \e -> do
+    let err = show (e :: PacketException)
+    logWarn $ "Received bad packet: " ++ err
+    return s1
+  
   putStr "Triggered rules: "
   let tRules = triggeredRules state' rules
   print tRules
@@ -82,17 +97,8 @@ dev = do
   putStrLn "New state: "
   state'' <- runRules serial state' rules
   print state''
-  where
-    simulate state = do
-      let
-        readCards =
-          [ ActionElement { address = 1, value = Prop.Int 1 }
-          , ActionElement { address = 2, value = Prop.Int 2 }
-          ]
-      return $ applyAction state readCards
-    -- simulate state = do
-    --   let bs = B.pack . map chr $ [0x00, 0x00, 0x00, 0x01, 0x01, 0x01]
-    --   -- let raw = [0x00, 0x00, 0x00, 0x02, 0x01, 0x02]
-    --   case fromRaw bs of
-    --     Left x -> error "Invalid packet"
-    --     Right packet -> 
+
+logWarn :: String -> IO ()
+logWarn msg = do
+  let msg' = "WARNING: " ++ msg
+  putStrLn msg'

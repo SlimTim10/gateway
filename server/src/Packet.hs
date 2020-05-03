@@ -1,6 +1,7 @@
 module Packet
   ( Packet(..)
   , RawPacket
+  , PacketException(..)
   , fromRaw
   , toRaw
   , readPacket
@@ -21,11 +22,29 @@ import Data.ByteString.FastBuilder
   , word32BE
   , word8
   )
+import Control.Exception (Exception)
+import Data.List (intercalate)
+import Numeric (showHex)
 
 import Lib (readJSON)
 import qualified Command as Cmd
 import Command (Command)
 import qualified Types.Prop as Prop
+
+data PacketException
+  = PacketTooSmall
+  | UnexpectedEmptyPayload String
+  | UnexpectedPayload String B.ByteString
+  | InvalidCommand
+  | InvalidPropAddress Int
+  deriving (Exception)
+
+instance Show PacketException where
+  show PacketTooSmall = "Too small"
+  show (UnexpectedEmptyPayload expect) = "Couldn't match expected " ++ expect ++ " with empty payload"
+  show (UnexpectedPayload expect pld) = "Couldn't match expected " ++ expect ++ " with payload " ++ showHexBytes pld
+  show InvalidCommand = "Invalid command ID"
+  show (InvalidPropAddress n) = "Prop at address " ++ showHexNumber n ++ " does not exist"
 
 type RawPacket = B.ByteString
 
@@ -71,37 +90,35 @@ getWord32 bs = fromIntegral $ Bin.runGet Bin.getWord32be (fromStrict bs)
 getWord8 :: B.ByteString -> Word8
 getWord8 bs = fromIntegral $ Bin.runGet Bin.getWord8 (fromStrict bs)
 
-payloadValue :: Command -> B.ByteString -> Either String Prop.Value
+payloadValue :: Command -> B.ByteString -> Either PacketException Prop.Value
 payloadValue Cmd.PayloadInt bs
-  | B.null bs = Left "Couldn't match expected single integer with empty payload"
-  | B.length bs > 1 =
-      Left
-      $ "Couldn't match expected single Int with payload of "
-      ++ show (B.length bs)
-      ++ " bytes"
+  | B.null bs = Left $ UnexpectedEmptyPayload "single integer"
+  | B.length bs > 1 = Left $ UnexpectedPayload "single integer" bs
   | otherwise = Right $ Prop.Int $ getWord8 bs
 payloadValue Cmd.PayloadIntList bs
-  | B.null bs = Left "Couldn't match expected integer list with empty payload"
+  | B.null bs = Left $ UnexpectedEmptyPayload "integer list"
   | otherwise = Right $ Prop.IntList ns
   where
     ns = map (fromIntegral . ord) . B.unpack $ bs
 payloadValue Cmd.PayloadString bs
-  | B.null bs = Left "Couldn't match expected string with empty payload"
+  | B.null bs = Left $ UnexpectedEmptyPayload "string"
   | otherwise = Right $ Prop.String $ B.unpack bs
 payloadValue _ _ = Right Prop.Nothing
 
-fromRaw :: RawPacket -> Either String Packet
+fromRaw :: RawPacket -> Either PacketException Packet
 fromRaw raw
-  | B.length raw < minPacketSize = Left "Not enough bytes for packet"
+  | B.length raw < minPacketSize = Left PacketTooSmall
   | otherwise = do
-      cmd <- Cmd.fromInt rawCmd
-      pld <- payloadValue cmd rawPayload
-      return $
-        Packet
-        { propAddress = addr
-        , commandID = cmd
-        , payload = pld
-        }
+      case Cmd.fromInt rawCmd of
+        Nothing -> Left InvalidCommand
+        Just cmd -> do
+          pld <- payloadValue cmd rawPayload
+          return $
+            Packet
+            { propAddress = addr
+            , commandID = cmd
+            , payload = pld
+            }
   where
     addr = fromIntegral . getWord32 . slice addrIdx addrSize $ raw
     rawCmd = getWord8 . slice cmdIdx cmdSize $ raw
@@ -129,3 +146,19 @@ toRaw
 
 readPacket :: FilePath -> IO (Either String Packet)
 readPacket = readJSON
+
+showHexBytes :: B.ByteString -> String
+showHexBytes bs = "[" ++ showHexBytes' bs ++ "]"
+
+showHexBytes' :: B.ByteString -> String
+showHexBytes'
+  = intercalate ", "
+  . map (showHexNumber . ord)
+  . B.unpack
+
+showHexNumber :: Int -> String
+showHexNumber n = "0x" ++ prefix ++ showHex n ""
+  where
+    prefix
+      | n < 0x10 = "0"
+      | otherwise = ""
