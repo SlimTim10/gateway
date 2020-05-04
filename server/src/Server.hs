@@ -13,11 +13,6 @@ import Control.Monad
   ( foldM
   , void
   )
-import Control.Monad.IO.Class (MonadIO)
-import Control.Exception
-  ( Exception
-  , throw
-  )
 
 import Types.Rule (Rule(..))
 import Types.Rule.Trigger
@@ -69,22 +64,13 @@ applyActionElement
   where
     f prop = Just $ (prop :: Prop) { value = av }
 
-raise :: (Exception e, MonadIO m) => Either e a -> m a
-raise = either throw return
-
-handleRawPacket :: State -> RawPacket -> IO State
-handleRawPacket state = raise . handleRawPacket' state
-
-handleRawPacket' :: State -> RawPacket -> Either PacketException State
-handleRawPacket' state raw = do
+handleRawPacket :: State -> RawPacket -> Either PacketException State
+handleRawPacket state raw = do
   packet <- Packet.fromRaw raw
-  handlePacket' state packet
+  handlePacket state packet
 
-handlePacket :: State -> Packet -> IO State
-handlePacket state = raise . handlePacket' state
-
-handlePacket' :: State -> Packet -> Either PacketException State
-handlePacket'
+handlePacket :: State -> Packet -> Either PacketException State
+handlePacket
   state
   Packet { propAddress = addr, commandID = cmd, payload }
   | addr `State.notMember` state = Left $ InvalidPropAddress addr

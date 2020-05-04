@@ -25,13 +25,33 @@ import Data.Char
   , ord
   )
 
-import Packet (RawPacket)
+import Packet
+  ( RawPacket
+  )
 import Encoding
   ( cobsDecode
   , cobsEncode
   )
 
 -- Packets are surrounded by null bytes, have two check bytes at the end, and are COBS-encoded
+-- recvRawPacket :: SerialPort -> IO (Either PacketException RawPacket)
+-- recvRawPacket s = do
+--   b <- serialDropWhile (not . valid) s
+--   bs <- serialTakeWhile valid s
+--   let raw = cobsDecode (b <> bs)
+--   let pkt = withoutCheckBytes raw
+--   return $
+--     if check raw
+--     then Right pkt
+--     else Left "Invalid checksum"
+--   where
+--     valid :: B.ByteString -> Bool
+--     valid x
+--       = not . any ($ x)
+--       $
+--       [ B.null
+--       , (== excludedByte)
+--       ]
 recvRawPacket :: SerialPort -> IO (Either String RawPacket)
 recvRawPacket s = do
   b <- serialDropWhile (not . valid) s

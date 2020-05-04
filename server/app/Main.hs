@@ -12,7 +12,6 @@ import Control.Concurrent (threadDelay)
 import Options.Applicative (execParser)
 import qualified Data.ByteString.Char8 as B
 import Data.Char (chr)
-import Control.Exception (catch)
 -- import Text.Pretty.Simple (pPrint)
 
 import Options
@@ -20,7 +19,6 @@ import Options
   , Options(..)
   )
 -- import Packet (fromRaw)
-import Packet (PacketException)
 -- import ReliableSerial (recvRawPacket)
 -- import qualified Types.Prop as Prop
 import Types.Rule (Rule(..))
@@ -65,6 +63,9 @@ run (Options port baud) = do
 triggeredRules :: State -> Rules -> Rules
 triggeredRules state = filter (checkTrigger state . trigger)
 
+catchEither :: Monad m => Either a b -> (a -> m b) -> m b
+catchEither x f = either f return x
+
 dev :: IO ()
 dev = do
   let port = "COM19"
@@ -82,12 +83,13 @@ dev = do
   putStrLn ""
   
   let bs0 = B.pack . map chr $ [0x00, 0x00, 0x00, 0x01, 0x01, 0x01]
-  s1 <- handleRawPacket state bs0
+  s1 <- handleRawPacket state bs0 `catchEither` \e -> do
+    logWarn $ "Received bad packet: " ++ show e
+    return state
+  
   let bs1 = B.pack . map chr $ [0x00, 0x00, 0x00, 0x02, 0x01, 0x02]
-
-  state' <- handleRawPacket s1 bs1 `catch` \e -> do
-    let err = show (e :: PacketException)
-    logWarn $ "Received bad packet: " ++ err
+  state' <- handleRawPacket s1 bs1 `catchEither` \e -> do
+    logWarn $ "Received bad packet: " ++ show e
     return s1
   
   putStr "Triggered rules: "
