@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 997fd6eb6709b2ddbbce1fc0dc44e15074e67c56bfdff2a0efd613954fd2d88a
+-- hash: 3f7d610772227e17633dc42b8fa43b8fe06e41a4d0af3e425d1312f9d42ffaf5
 
 name:           server
 version:        0.1.0.0
@@ -51,6 +51,7 @@ library
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
   build-depends:
       aeson >=1.4.6.0 && <1.5
+    , ansi-terminal >=0.10.3 && <0.11
     , base >=4.7 && <5
     , binary >=0.8.6.0 && <0.9
     , bytestring >=0.10.10.0 && <0.11
@@ -78,6 +79,7 @@ executable server-exe
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson >=1.4.6.0 && <1.5
+    , ansi-terminal >=0.10.3 && <0.11
     , base >=4.7 && <5
     , binary >=0.8.6.0 && <0.9
     , bytestring >=0.10.10.0 && <0.11
@@ -113,6 +115,7 @@ test-suite server-test
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson >=1.4.6.0 && <1.5
+    , ansi-terminal >=0.10.3 && <0.11
     , base >=4.7 && <5
     , binary >=0.8.6.0 && <0.9
     , bytestring >=0.10.10.0 && <0.11

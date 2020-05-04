@@ -37,6 +37,7 @@ data PacketException
   | UnexpectedPayload String B.ByteString
   | InvalidCommand
   | InvalidPropAddress Int
+  | InvalidChecksum
   deriving (Exception)
 
 instance Show PacketException where
@@ -45,6 +46,7 @@ instance Show PacketException where
   show (UnexpectedPayload expect pld) = "Couldn't match expected " ++ expect ++ " with payload " ++ showHexBytes pld
   show InvalidCommand = "Invalid command ID"
   show (InvalidPropAddress n) = "Prop at address " ++ showHexNumber n ++ " does not exist"
+  show InvalidChecksum = "Invalid checksum"
 
 type RawPacket = B.ByteString
 

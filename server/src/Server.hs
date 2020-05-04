@@ -97,9 +97,11 @@ runActionElement
       Prop.Int _ -> Cmd.PayloadInt
       Prop.IntList _ -> Cmd.PayloadIntList
       Prop.String _ -> Cmd.PayloadString
+      -- TODO: replace error with exception handling
       _ -> error "Invalid value in action"
     addr = case state !? addr' of
       Just p -> Prop.address p
+      -- TODO: replace error with exception handling
       Nothing -> error "Invalid prop address in action"
     packet = Packet
       { propAddress = addr
