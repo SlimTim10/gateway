@@ -1,7 +1,6 @@
 #include "hal.h"
 
 #include <ArduinoProps.h>
-#include <ArduinoProps_config.h>
 #include <ArduinoProps_RF69.h>
 
 #include <Arduino.h>
@@ -49,8 +48,7 @@ static inline void handleSerial(void) {
 	uint8_t length = sizeof(packet);
 
 	if (serialRecvPacket(packet, &length)) {
-		if (length > 0) {
-			sendPacket(&radio, packet, length);
-		}
+		delay(50);
+		sendPacket(&radio, packet, length);
 	}
 }
