@@ -10,8 +10,6 @@ import System.Hardware.Serialport
   )
 import Control.Concurrent (threadDelay)
 import Options.Applicative (execParser)
-import qualified Data.ByteString.Char8 as B
-import Data.Char (chr)
 import System.Console.ANSI (clearScreen)
 -- import Text.Pretty.Simple (pPrint)
 
@@ -59,24 +57,27 @@ run (Options port baud) = do
 triggeredRules :: State -> Rules -> Rules
 triggeredRules state = filter (checkTrigger state . trigger)
 
+eitherM :: Monad m => (a -> m c) -> (b -> m c) -> m (Either a b) -> m c
+eitherM l r x = either l r =<< x
+
 listen :: SerialPort -> State -> Rules -> IO ()
 listen serial state rules = do
-  eRaw <- recvRawPacket serial
-  case eRaw of
-    Left e1 -> do
-      logWarn $ "Received bad packet: " ++ show e1
-      continue
-    Right raw -> do
-      case handleRawPacket state raw of
-        Left e2 -> do
-          logWarn $ "Received bad packet: " ++ show e2
-          continue
-        Right state' -> do
-          state'' <- runRules serial state' rules
-          display state'' rules
-          listen serial state'' rules
+  eitherM
+    discard
+    useRawPacket
+    (recvRawPacket serial)
   where
-    continue = listen serial state rules
+    discard e = do
+      logWarn $ "Received bad packet: " ++ show e
+      listen serial state rules
+    updateState state' = do
+      state'' <- runRules serial state' rules
+      display state'' rules
+      listen serial state'' rules
+    useRawPacket raw = either
+      discard
+      updateState
+      (handleRawPacket state raw)
 
 display :: State -> Rules -> IO ()
 display state rules = do
@@ -96,49 +97,6 @@ dev = do
   state <- State.fromConfigThrow (Config.props config)
   rules <- Rules.fromConfigThrow state (Config.rules config)
   listen serial state rules
-
-catchEither :: Monad m => Either a b -> (a -> m b) -> m b
-catchEither x f = either f return x
-
-catchEitherM :: Monad m => m (Either a b) -> (a -> m b) -> m b
-catchEitherM mx f = do
-  x <- mx
-  catchEither x f
-
-dev2 :: IO ()
-dev2 = do
-  let port = "COM19"
-  let baud = CS115200
-  serial <- openSerial port defaultSerialSettings { commSpeed = baud }
-  config <- Config.readConfigThrow "test/data/config.yaml"
-  delaySeconds 1
-  state <- State.fromConfigThrow (Config.props config)
-  rules <- Rules.fromConfigThrow state (Config.rules config)
-
-  putStr "Triggered rules: " 
-  print $ triggeredRules state rules
-
-  putStrLn ""
-  putStrLn "Reading cards..."
-  putStrLn ""
-  
-  let bs0 = B.pack . map chr $ [0x00, 0x00, 0x00, 0x01, 0x01, 0x01]
-  s1 <- handleRawPacket state bs0 `catchEither` \e -> do
-    logWarn $ "Received bad packet: " ++ show e
-    return state
-  
-  let bs1 = B.pack . map chr $ [0x00, 0x00, 0x00, 0x02, 0x01, 0x02]
-  state' <- handleRawPacket s1 bs1 `catchEither` \e -> do
-    logWarn $ "Received bad packet: " ++ show e
-    return s1
-  
-  putStr "Triggered rules: "
-  print $ triggeredRules state rules
-  
-  putStrLn ""
-  putStrLn "New state: "
-  state'' <- runRules serial state' rules
-  print state''
 
 logWarn :: String -> IO ()
 logWarn msg = do
