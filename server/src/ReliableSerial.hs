@@ -44,7 +44,7 @@ recvRawPacket s = do
   return $
     if check raw
     then Right pkt
-    else Left InvalidChecksum
+    else Left $ InvalidChecksum raw
   where
     valid :: B.ByteString -> Bool
     valid x

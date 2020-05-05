@@ -35,18 +35,18 @@ data PacketException
   = PacketTooSmall
   | UnexpectedEmptyPayload String
   | UnexpectedPayload String B.ByteString
-  | InvalidCommand
+  | InvalidCommand RawPacket
   | InvalidPropAddress Int
-  | InvalidChecksum
+  | InvalidChecksum RawPacket
   deriving (Exception)
 
 instance Show PacketException where
   show PacketTooSmall = "Too small"
   show (UnexpectedEmptyPayload expect) = "Couldn't match expected " ++ expect ++ " with empty payload"
   show (UnexpectedPayload expect pld) = "Couldn't match expected " ++ expect ++ " with payload " ++ showHexBytes pld
-  show InvalidCommand = "Invalid command ID"
+  show (InvalidCommand raw) = "Invalid command ID in " ++ showHexBytes raw
   show (InvalidPropAddress n) = "Prop at address " ++ showHexNumber n ++ " does not exist"
-  show InvalidChecksum = "Invalid checksum"
+  show (InvalidChecksum raw) = "Invalid checksum in " ++ showHexBytes raw
 
 type RawPacket = B.ByteString
 
@@ -112,7 +112,7 @@ fromRaw raw
   | B.length raw < minPacketSize = Left PacketTooSmall
   | otherwise = do
       case Cmd.fromInt rawCmd of
-        Nothing -> Left InvalidCommand
+        Nothing -> Left $ InvalidCommand raw
         Just cmd -> do
           pld <- payloadValue cmd rawPayload
           return $
