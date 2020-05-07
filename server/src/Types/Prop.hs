@@ -67,4 +67,4 @@ rawValue :: Value -> B.ByteString
 rawValue Nothing = B.empty
 rawValue (Int x) = toStrictByteString . word8 $ x
 rawValue (IntList xs) = mconcat . map (toStrictByteString . word8) $ xs
-rawValue (String s) = B.pack s
+rawValue (String s) = B.snoc (B.pack s) '\0'
