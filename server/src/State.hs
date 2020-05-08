@@ -5,6 +5,7 @@ module State
   , fromConfigThrow
   , update
   , notMember
+  , prettyPrint
   ) where
 
 import Data.IntMap.Strict
@@ -19,6 +20,7 @@ import Data.List
   , groupBy
   )
 import Control.Exception (throwIO)
+import Data.Text (unpack)
 
 import Types.Prop (Prop(..))
 import Config.Prop (ConfigProp)
@@ -55,3 +57,17 @@ fromConfigProp cProp = Prop
   , defaultValue = CP.defaultValue cProp
   , value = CP.defaultValue cProp
   }
+
+prettyPrint :: State -> IO ()
+prettyPrint = mapM_ f . IntMap.toList
+  where
+    f (addr, Prop {name, description, defaultValue, value}) = do
+      let
+        indent = replicate 2 ' '
+        descString = case description of
+          Just d -> " (" ++ unpack d ++ ")"
+          Nothing -> ""
+      putStrLn $ show addr ++ ": " ++ unpack name ++ descString
+      putStrLn $ indent ++ "default value: " ++ show defaultValue
+      putStrLn $ indent ++ "current value: " ++ show value
+      putStrLn ""

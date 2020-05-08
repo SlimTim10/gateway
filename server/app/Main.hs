@@ -10,7 +10,12 @@ import System.Hardware.Serialport
   )
 import Control.Concurrent (threadDelay)
 import Options.Applicative (execParser)
-import System.Console.ANSI (clearScreen)
+import System.Console.ANSI
+  ( clearScreen
+  , saveCursor
+  , restoreCursor
+  , clearFromCursorToScreenEnd
+  )
 -- import Text.Pretty.Simple (pPrint)
 
 import Options
@@ -49,6 +54,8 @@ run (Options port baud) = do
   config <- Config.readConfigThrow "test/data/config.yaml"
   state <- State.fromConfigThrow (Config.props config)
   rules <- Rules.fromConfigThrow state (Config.rules config)
+  clearScreen
+  saveCursor
   listen serial state rules
   closeSerial serial
   where
@@ -81,11 +88,13 @@ listen serial state rules = do
 
 display :: State -> Rules -> IO ()
 display state rules = do
-  clearScreen
+  restoreCursor
+  clearFromCursorToScreenEnd
+  restoreCursor
   putStrLn "TRIGGERED RULES"
   print $ triggeredRules state rules
   putStrLn "STATE"
-  print state
+  State.prettyPrint state
 
 dev :: IO ()
 dev = do
