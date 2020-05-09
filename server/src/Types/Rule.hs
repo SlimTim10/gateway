@@ -13,7 +13,6 @@ import Data.Aeson
   )
 import Data.Text (Text)
 import Data.Char (toLower)
-import Data.List (intercalate)
 
 import Types.Rule.Trigger (Trigger)
 import Types.Rule.Action (Action)
@@ -32,14 +31,4 @@ data Rule = Rule
   , trigger :: Trigger
   , action :: Action
   }
-  deriving (Eq)
-
-instance Show Rule where
-  show Rule {type_, description, trigger, action}
-    = intercalate ", "
-      [ "type: " ++ show type_
-      , maybe "" (\d -> "description: " ++ show d) description
-      , "trigger: " ++ show trigger
-      , "action: " ++ show action
-      ]
-    ++ "\n"
+  deriving (Eq, Show)

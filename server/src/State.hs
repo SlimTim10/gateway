@@ -61,7 +61,7 @@ fromConfigProp cProp = Prop
 prettyPrint :: State -> IO ()
 prettyPrint = mapM_ f . IntMap.toList
   where
-    f (addr, Prop {name, description, defaultValue, value}) = do
+    f (addr, Prop{name, description, defaultValue, value}) = do
       let
         indent = replicate 2 ' '
         descString = case description of

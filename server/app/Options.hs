@@ -6,6 +6,7 @@ import System.Hardware.Serialport (CommSpeed(..))
 data Options = Options
   { port :: String
   , baud :: CommSpeed
+  , config :: FilePath
   }
 
 parseOptions :: Parser Options
@@ -24,12 +25,20 @@ parseOptions = Options
     <> value CS115200
     <> help "Baud rate"
   )
+  <*> strOption
+  ( long "config"
+    <> short 'c'
+    <> metavar "CONFIG-FILE"
+    <> showDefault
+    <> value "config.yaml"
+    <> help "Config file"
+  )
 
 options :: ParserInfo Options
 options = info (parseOptions <**> helper)
   $ fullDesc
-  <> progDesc "Run backend"
-  <> header "backend"
+  <> progDesc "Run server"
+  <> header "server"
 
 parseBaud :: ReadM CommSpeed
 parseBaud = eitherReader $ \s -> case s of

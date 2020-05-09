@@ -48,18 +48,21 @@ delaySeconds = threadDelay . secondsToMicro
     secondsToMicro = (* 1000) . (* 1000)
 
 run :: Options -> IO ()
-run (Options port baud) = do
+run (Options port baud configFile) = do
   serial <- openSerial port defaultSerialSettings { commSpeed = baud }
   waitForArduino
-  config <- Config.readConfigThrow "test/data/config.yaml"
+  config <- Config.readConfigThrow configFile
   state <- State.fromConfigThrow (Config.props config)
   rules <- Rules.fromConfigThrow state (Config.rules config)
-  clearScreen
-  saveCursor
+  prepareScreen
+  display state rules
   listen serial state rules
   closeSerial serial
   where
     waitForArduino = delaySeconds 2
+    prepareScreen = do
+      clearScreen
+      saveCursor
 
 triggeredRules :: State -> Rules -> Rules
 triggeredRules state = filter (checkTrigger state . trigger)
@@ -88,13 +91,15 @@ listen serial state rules = do
 
 display :: State -> Rules -> IO ()
 display state rules = do
-  restoreCursor
-  clearFromCursorToScreenEnd
-  restoreCursor
+  wipeScreen
   putStrLn "TRIGGERED RULES"
-  print $ triggeredRules state rules
+  Rules.prettyPrint $ triggeredRules state rules
   putStrLn "STATE"
   State.prettyPrint state
+  where
+    wipeScreen = do
+      restoreCursor
+      clearFromCursorToScreenEnd
 
 dev :: IO ()
 dev = do

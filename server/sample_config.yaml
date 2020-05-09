@@ -1,0 +1,17 @@
+props:
+  - name: Card Spot
+    description: RFID tag reader
+    address: 0x01
+    default-value: 0
+
+  - name: Door
+    address: 0x10
+    default-value: closed
+
+rules:
+  - type: basic
+    description: Open the door with the right card
+    trigger:
+      - Card Spot: 3
+    action:
+      - Door: open
