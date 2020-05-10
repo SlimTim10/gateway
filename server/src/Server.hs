@@ -29,14 +29,14 @@ import State
   )
 import Types.Prop (Prop(..))
 import qualified Types.Prop as Prop
-import Packet
+import Types.Packet
   ( Packet(..)
   , RawPacket
   , PacketException(..)
   )
-import qualified Packet
+import qualified Types.Packet as Packet
 import ReliableSerial (sendRawPacket)
-import qualified Command as Cmd
+import qualified Types.Command as Cmd
 import qualified State
 import Rules (Rules)
 

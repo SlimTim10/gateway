@@ -25,7 +25,7 @@ import Data.Char
   , ord
   )
 
-import Packet
+import Types.Packet
   ( RawPacket
   , PacketException(..)
   )

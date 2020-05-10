@@ -1,4 +1,4 @@
-module Packet
+module Types.Packet
   ( Packet(..)
   , RawPacket
   , PacketException(..)
@@ -27,8 +27,8 @@ import Data.List (intercalate)
 import Numeric (showHex)
 
 import Lib (readJSON)
-import qualified Command as Cmd
-import Command (Command)
+import qualified Types.Command as Cmd
+import Types.Command (Command)
 import qualified Types.Prop as Prop
 
 data PacketException

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3f7d610772227e17633dc42b8fa43b8fe06e41a4d0af3e425d1312f9d42ffaf5
+-- hash: 943f39856595acc837a2402652351f5365a942d275015d9086d539dd2b3469c2
 
 name:           server
 version:        0.1.0.0
@@ -26,7 +26,6 @@ source-repository head
 
 library
   exposed-modules:
-      Command
       Config
       Config.Prop
       Config.Rule
@@ -34,11 +33,12 @@ library
       Config.Rule.Trigger
       Encoding
       Lib
-      Packet
       ReliableSerial
       Rules
       Server
       State
+      Types.Command
+      Types.Packet
       Types.Prop
       Types.Rule
       Types.Rule.Action
