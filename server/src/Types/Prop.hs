@@ -1,6 +1,5 @@
 module Types.Prop where
 
-import Prelude hiding (Nothing)
 import GHC.Generics (Generic)
 import Data.Yaml
   ( FromJSON
@@ -30,14 +29,12 @@ data Value
   = Int Word8
   | IntList [Word8]
   | String String
-  | Nothing
   deriving (Eq, Generic, ToJSON)
 
 instance Show Value where
   show (Int x) = show x
   show (IntList x) = show x
   show (String x) = x
-  show Nothing = "Nothing"
 
 instance FromJSON Value where
   parseJSON = genericParseJSON
@@ -63,8 +60,8 @@ instance Show Prop where
       ]
     ++ "\n"
 
-rawValue :: Value -> B.ByteString
+rawValue :: Maybe Value -> B.ByteString
 rawValue Nothing = B.empty
-rawValue (Int x) = toStrictByteString . word8 $ x
-rawValue (IntList xs) = mconcat . map (toStrictByteString . word8) $ xs
-rawValue (String s) = B.snoc (B.pack s) '\0'
+rawValue (Just (Int x)) = toStrictByteString . word8 $ x
+rawValue (Just (IntList xs)) = mconcat . map (toStrictByteString . word8) $ xs
+rawValue (Just (String s)) = B.snoc (B.pack s) '\0'

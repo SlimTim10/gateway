@@ -53,7 +53,7 @@ type RawPacket = B.ByteString
 data Packet = Packet
   { propAddress :: Int
   , commandID :: Command
-  , payload :: Prop.Value
+  , payload :: Maybe Prop.Value
   }
   deriving (Show, Eq, Generic, ToJSON, FromJSON)
 
@@ -92,20 +92,20 @@ getWord32 bs = fromIntegral $ Bin.runGet Bin.getWord32be (fromStrict bs)
 getWord8 :: B.ByteString -> Word8
 getWord8 bs = fromIntegral $ Bin.runGet Bin.getWord8 (fromStrict bs)
 
-payloadValue :: Command -> B.ByteString -> Either PacketException Prop.Value
+payloadValue :: Command -> B.ByteString -> Either PacketException (Maybe Prop.Value)
 payloadValue Cmd.PayloadInt bs
   | B.null bs = Left $ UnexpectedEmptyPayload "single integer"
   | B.length bs > 1 = Left $ UnexpectedPayload "single integer" bs
-  | otherwise = Right $ Prop.Int $ getWord8 bs
+  | otherwise = Right $ Just $ Prop.Int $ getWord8 bs
 payloadValue Cmd.PayloadIntList bs
   | B.null bs = Left $ UnexpectedEmptyPayload "integer list"
-  | otherwise = Right $ Prop.IntList ns
+  | otherwise = Right $ Just $ Prop.IntList ns
   where
     ns = map (fromIntegral . ord) . B.unpack $ bs
 payloadValue Cmd.PayloadString bs
   | B.null bs = Left $ UnexpectedEmptyPayload "string"
-  | otherwise = Right $ Prop.String $ B.unpack bs
-payloadValue _ _ = Right Prop.Nothing
+  | otherwise = Right $ Just $ Prop.String $ B.unpack bs
+payloadValue _ _ = Right Nothing
 
 fromRaw :: RawPacket -> Either PacketException Packet
 fromRaw raw

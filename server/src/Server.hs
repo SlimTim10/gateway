@@ -72,13 +72,20 @@ handleRawPacket state raw = do
 handlePacket :: State -> Packet -> Either PacketException State
 handlePacket
   state
-  Packet { propAddress = addr, commandID = cmd, payload }
+  Packet { propAddress = addr, commandID = cmd, payload = Nothing }
+  | addr `State.notMember` state = Left $ InvalidPropAddress addr
+  | otherwise = case cmd of
+      Cmd.Ping -> error "Not yet supported"
+      _ -> error "No command"
+handlePacket
+  state
+  Packet { propAddress = addr, commandID = cmd, payload = Just pld }
   | addr `State.notMember` state = Left $ InvalidPropAddress addr
   | otherwise = case cmd of
       Cmd.Ping -> error "Not yet supported"
       _ -> Right $ State.update f addr state
   where
-    f prop = Just $ (prop :: Prop) { value = payload }
+    f prop = Just $ (prop :: Prop) { value = pld }
 
 sendPacket :: SerialPort -> Packet -> IO (Int)
 sendPacket serial packet = sendRawPacket serial (Packet.toRaw packet)
@@ -97,8 +104,6 @@ runActionElement
       Prop.Int _ -> Cmd.PayloadInt
       Prop.IntList _ -> Cmd.PayloadIntList
       Prop.String _ -> Cmd.PayloadString
-      -- TODO: replace error with exception handling
-      _ -> error "Invalid value in action"
     addr = case state !? addr' of
       Just p -> Prop.address p
       -- TODO: replace error with exception handling
@@ -106,7 +111,7 @@ runActionElement
     packet = Packet
       { propAddress = addr
       , commandID = cmd
-      , payload = v
+      , payload = Just v
       }
   sendPacket_ serial packet
   let state' = applyActionElement state ae
