@@ -45,3 +45,7 @@ stack build
 #+BEGIN_EXAMPLE
 stack exec server-exe -- -p COM19
 #+END_EXAMPLE
+
+** Future
+
+- Record a rule trigger (like a macro). Set mode to recording, interact with the props to set them to their desired states (in the desired order for a sequence rule), then stop recording. Choose the action for the rule from a menu.
