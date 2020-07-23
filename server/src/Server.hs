@@ -69,20 +69,21 @@ handleRawPacket state raw = do
   packet <- Packet.fromRaw raw
   handlePacket state packet
 
+-- TODO: replace error with exception handling
 handlePacket :: State -> Packet -> Either PacketException State
 handlePacket
   state
   Packet { propAddress = addr, commandID = cmd, payload = Nothing }
   | addr `State.notMember` state = Left $ InvalidPropAddress addr
   | otherwise = case cmd of
-      Cmd.Ping -> error "Not yet supported"
+      Cmd.Ping -> error "Ping command not yet supported"
       _ -> error "No command"
 handlePacket
   state
   Packet { propAddress = addr, commandID = cmd, payload = Just pld }
   | addr `State.notMember` state = Left $ InvalidPropAddress addr
   | otherwise = case cmd of
-      Cmd.Ping -> error "Not yet supported"
+      Cmd.Ping -> error "Ping command not yet supported"
       _ -> Right $ State.update f addr state
   where
     f prop = Just $ (prop :: Prop) { value = pld }
