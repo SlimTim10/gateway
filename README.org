@@ -46,6 +46,9 @@ stack build
 stack exec server-exe -- -p COM19
 #+END_EXAMPLE
 
+*** Error Handling
+It is often the case that external input is in an unintended format. The errors due to that expectation produce a detailed message. Execution is proceeded when possible. As an example, the ~*.yaml~ configuration file may have any number of mistakes, after which the server cannot proceed in any reasonable way. Another example is a packet coming from the converter being unusable, where a message is produced and execution is proceeded by ignoring the packet. Handling of these errors is implemented using ~Either~ with custom ~Exception~ types.
+
 ** Future
 
 - Record a rule trigger (like a macro). Set mode to recording, interact with the props to set them to their desired states (in the desired order for a sequence rule), then stop recording. Choose the action for the rule from a menu.
